@@ -1,0 +1,44 @@
+vector String <byte>;
+vector StringVec <String>;
+
+array Number [byte; 8];
+array NumberRange [Number; 2];
+array MutantRange [Number; 2];
+vector NumberVec <Number>;
+vector MutantVec <Number>;
+
+table FloatVec {
+	numerator_vec: NumberVec,
+	denominator: Number,
+}
+
+table FloatRange {
+    numerator_range: NumberRange,
+	denominator: Number,
+}
+
+union TraitType {
+	StringVec,
+	NumberVec,
+	FloatVec,
+	MutantVec,
+	NumberRange,
+    FloatRange,
+	MutantRange,
+}
+
+vector TraitTypeVec <TraitType>;
+option TraitTypeVecOpt (TraitTypeVec);
+
+table TraitSchema {
+	byte_length: byte,
+	traits_pool: TraitTypeVecOpt,
+}
+vector TraitSchemaVec <TraitSchema>;
+
+table Trait {
+	name: String,
+	traits: TraitSchemaVec,
+}
+
+vector TraitsBase <Trait>;
