@@ -1,6 +1,5 @@
 use alloc::string::String;
 use alloc::vec::Vec;
-use core::ffi::CStr;
 use molecule::prelude::Entity;
 use rand::rngs::SmallRng;
 use rand::{RngCore, SeedableRng};
@@ -14,29 +13,24 @@ use types::{Error, Parameters, ParsedDNA, ParsedTrait};
 // argv[1] = efc2866a311da5b6dfcdfc4e3c22d00d024a53217ebc33855eeab1068990ed9d (hexed DNA string in Spore)
 // argv[2] = 1250945 (block number while minting)
 // argv[3] = d48869363ff41a103b131a29f43...d7be6eeaf513c2c3ae056b9b8c2e1 (traits config in Cluster)
-pub fn dobs_parse_parameters(argc: u64, argv: *const *const i8) -> Result<Parameters, Error> {
-    if argc != 4 {
+pub fn dobs_parse_parameters(args: Vec<&[u8]>) -> Result<Parameters, Error> {
+    if args.len() != 3 {
         return Err(Error::ParseInvalidArgCount);
-    }
-    let mut params = Vec::new();
-    for i in 1..argc {
-        let argn = unsafe { CStr::from_ptr(argv.add(i as usize).read()) };
-        params.push(argn.to_bytes().to_vec());
     }
 
     let spore_dna = {
-        let value = &params[0];
+        let value = args[0];
         if value.is_empty() || value.len() % 2 != 0 {
             return Err(Error::ParseInvalidSporeDNA);
         }
         hex::decode(&value).map_err(|_| Error::ParseInvalidSporeDNA)?
     };
     let block_number = {
-        let value = String::from_utf8_lossy(&params[1]);
+        let value = String::from_utf8_lossy(args[1]);
         u64::from_str_radix(&value, 10).map_err(|_| Error::ParseInvalidBlockNumber)?
     };
     let traits_base = {
-        let value = &params[2];
+        let value = args[2];
         if value.len() % 2 != 0 {
             return Err(Error::ParseInvalidSporeDNA);
         }
