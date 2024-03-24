@@ -17,7 +17,7 @@ table FloatRange {
 	denominator: Number,
 }
 
-union TraitType {
+union TraitPool {
 	StringVec,
 	NumberVec,
 	FloatVec,
@@ -27,18 +27,17 @@ union TraitType {
 	MutantRange,
 }
 
-vector TraitTypeVec <TraitType>;
-option TraitTypeVecOpt (TraitTypeVec);
+option TraitPoolOpt (TraitPool);
 
 table TraitSchema {
 	byte_length: byte,
-	traits_pool: TraitTypeVecOpt,
+	trait_pool: TraitPoolOpt,
 }
 vector TraitSchemaVec <TraitSchema>;
 
 table Trait {
 	name: String,
-	traits: TraitSchemaVec,
+	schema_pool: TraitSchemaVec,
 }
 
 vector TraitsBase <Trait>;

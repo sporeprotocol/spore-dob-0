@@ -2262,8 +2262,8 @@ impl molecule::prelude::Builder for FloatRangeBuilder {
     }
 }
 #[derive(Clone)]
-pub struct TraitType(molecule::bytes::Bytes);
-impl ::core::fmt::LowerHex for TraitType {
+pub struct TraitPool(molecule::bytes::Bytes);
+impl ::core::fmt::LowerHex for TraitPool {
     fn fmt(&self, f: &mut ::core::fmt::Formatter) -> ::core::fmt::Result {
         use molecule::hex_string;
         if f.alternate() {
@@ -2272,31 +2272,31 @@ impl ::core::fmt::LowerHex for TraitType {
         write!(f, "{}", hex_string(self.as_slice()))
     }
 }
-impl ::core::fmt::Debug for TraitType {
+impl ::core::fmt::Debug for TraitPool {
     fn fmt(&self, f: &mut ::core::fmt::Formatter) -> ::core::fmt::Result {
         write!(f, "{}({:#x})", Self::NAME, self)
     }
 }
-impl ::core::fmt::Display for TraitType {
+impl ::core::fmt::Display for TraitPool {
     fn fmt(&self, f: &mut ::core::fmt::Formatter) -> ::core::fmt::Result {
         write!(f, "{}(", Self::NAME)?;
         self.to_enum().display_inner(f)?;
         write!(f, ")")
     }
 }
-impl ::core::default::Default for TraitType {
+impl ::core::default::Default for TraitPool {
     fn default() -> Self {
         let v = molecule::bytes::Bytes::from_static(&Self::DEFAULT_VALUE);
-        TraitType::new_unchecked(v)
+        TraitPool::new_unchecked(v)
     }
 }
-impl TraitType {
+impl TraitPool {
     const DEFAULT_VALUE: [u8; 8] = [0, 0, 0, 0, 4, 0, 0, 0];
     pub const ITEMS_COUNT: usize = 7;
     pub fn item_id(&self) -> molecule::Number {
         molecule::unpack_number(self.as_slice())
     }
-    pub fn to_enum(&self) -> TraitTypeUnion {
+    pub fn to_enum(&self) -> TraitPoolUnion {
         let inner = self.0.slice(molecule::NUMBER_SIZE..);
         match self.item_id() {
             0 => StringVec::new_unchecked(inner).into(),
@@ -2309,15 +2309,15 @@ impl TraitType {
             _ => panic!("{}: invalid data", Self::NAME),
         }
     }
-    pub fn as_reader<'r>(&'r self) -> TraitTypeReader<'r> {
-        TraitTypeReader::new_unchecked(self.as_slice())
+    pub fn as_reader<'r>(&'r self) -> TraitPoolReader<'r> {
+        TraitPoolReader::new_unchecked(self.as_slice())
     }
 }
-impl molecule::prelude::Entity for TraitType {
-    type Builder = TraitTypeBuilder;
-    const NAME: &'static str = "TraitType";
+impl molecule::prelude::Entity for TraitPool {
+    type Builder = TraitPoolBuilder;
+    const NAME: &'static str = "TraitPool";
     fn new_unchecked(data: molecule::bytes::Bytes) -> Self {
-        TraitType(data)
+        TraitPool(data)
     }
     fn as_bytes(&self) -> molecule::bytes::Bytes {
         self.0.clone()
@@ -2326,10 +2326,10 @@ impl molecule::prelude::Entity for TraitType {
         &self.0[..]
     }
     fn from_slice(slice: &[u8]) -> molecule::error::VerificationResult<Self> {
-        TraitTypeReader::from_slice(slice).map(|reader| reader.to_entity())
+        TraitPoolReader::from_slice(slice).map(|reader| reader.to_entity())
     }
     fn from_compatible_slice(slice: &[u8]) -> molecule::error::VerificationResult<Self> {
-        TraitTypeReader::from_compatible_slice(slice).map(|reader| reader.to_entity())
+        TraitPoolReader::from_compatible_slice(slice).map(|reader| reader.to_entity())
     }
     fn new_builder() -> Self::Builder {
         ::core::default::Default::default()
@@ -2339,8 +2339,8 @@ impl molecule::prelude::Entity for TraitType {
     }
 }
 #[derive(Clone, Copy)]
-pub struct TraitTypeReader<'r>(&'r [u8]);
-impl<'r> ::core::fmt::LowerHex for TraitTypeReader<'r> {
+pub struct TraitPoolReader<'r>(&'r [u8]);
+impl<'r> ::core::fmt::LowerHex for TraitPoolReader<'r> {
     fn fmt(&self, f: &mut ::core::fmt::Formatter) -> ::core::fmt::Result {
         use molecule::hex_string;
         if f.alternate() {
@@ -2349,24 +2349,24 @@ impl<'r> ::core::fmt::LowerHex for TraitTypeReader<'r> {
         write!(f, "{}", hex_string(self.as_slice()))
     }
 }
-impl<'r> ::core::fmt::Debug for TraitTypeReader<'r> {
+impl<'r> ::core::fmt::Debug for TraitPoolReader<'r> {
     fn fmt(&self, f: &mut ::core::fmt::Formatter) -> ::core::fmt::Result {
         write!(f, "{}({:#x})", Self::NAME, self)
     }
 }
-impl<'r> ::core::fmt::Display for TraitTypeReader<'r> {
+impl<'r> ::core::fmt::Display for TraitPoolReader<'r> {
     fn fmt(&self, f: &mut ::core::fmt::Formatter) -> ::core::fmt::Result {
         write!(f, "{}(", Self::NAME)?;
         self.to_enum().display_inner(f)?;
         write!(f, ")")
     }
 }
-impl<'r> TraitTypeReader<'r> {
+impl<'r> TraitPoolReader<'r> {
     pub const ITEMS_COUNT: usize = 7;
     pub fn item_id(&self) -> molecule::Number {
         molecule::unpack_number(self.as_slice())
     }
-    pub fn to_enum(&self) -> TraitTypeUnionReader<'r> {
+    pub fn to_enum(&self) -> TraitPoolUnionReader<'r> {
         let inner = &self.as_slice()[molecule::NUMBER_SIZE..];
         match self.item_id() {
             0 => StringVecReader::new_unchecked(inner).into(),
@@ -2380,14 +2380,14 @@ impl<'r> TraitTypeReader<'r> {
         }
     }
 }
-impl<'r> molecule::prelude::Reader<'r> for TraitTypeReader<'r> {
-    type Entity = TraitType;
-    const NAME: &'static str = "TraitTypeReader";
+impl<'r> molecule::prelude::Reader<'r> for TraitPoolReader<'r> {
+    type Entity = TraitPool;
+    const NAME: &'static str = "TraitPoolReader";
     fn to_entity(&self) -> Self::Entity {
         Self::Entity::new_unchecked(self.as_slice().to_owned().into())
     }
     fn new_unchecked(slice: &'r [u8]) -> Self {
-        TraitTypeReader(slice)
+        TraitPoolReader(slice)
     }
     fn as_slice(&self) -> &'r [u8] {
         self.0
@@ -2414,20 +2414,20 @@ impl<'r> molecule::prelude::Reader<'r> for TraitTypeReader<'r> {
     }
 }
 #[derive(Clone, Debug, Default)]
-pub struct TraitTypeBuilder(pub(crate) TraitTypeUnion);
-impl TraitTypeBuilder {
+pub struct TraitPoolBuilder(pub(crate) TraitPoolUnion);
+impl TraitPoolBuilder {
     pub const ITEMS_COUNT: usize = 7;
     pub fn set<I>(mut self, v: I) -> Self
     where
-        I: ::core::convert::Into<TraitTypeUnion>,
+        I: ::core::convert::Into<TraitPoolUnion>,
     {
         self.0 = v.into();
         self
     }
 }
-impl molecule::prelude::Builder for TraitTypeBuilder {
-    type Entity = TraitType;
-    const NAME: &'static str = "TraitTypeBuilder";
+impl molecule::prelude::Builder for TraitPoolBuilder {
+    type Entity = TraitPool;
+    const NAME: &'static str = "TraitPoolBuilder";
     fn expected_length(&self) -> usize {
         molecule::NUMBER_SIZE + self.0.as_slice().len()
     }
@@ -2439,11 +2439,11 @@ impl molecule::prelude::Builder for TraitTypeBuilder {
         let mut inner = Vec::with_capacity(self.expected_length());
         self.write(&mut inner)
             .unwrap_or_else(|_| panic!("{} build should be ok", Self::NAME));
-        TraitType::new_unchecked(inner.into())
+        TraitPool::new_unchecked(inner.into())
     }
 }
 #[derive(Debug, Clone)]
-pub enum TraitTypeUnion {
+pub enum TraitPoolUnion {
     StringVec(StringVec),
     NumberVec(NumberVec),
     FloatVec(FloatVec),
@@ -2453,7 +2453,7 @@ pub enum TraitTypeUnion {
     MutantRange(MutantRange),
 }
 #[derive(Debug, Clone, Copy)]
-pub enum TraitTypeUnionReader<'r> {
+pub enum TraitPoolUnionReader<'r> {
     StringVec(StringVecReader<'r>),
     NumberVec(NumberVecReader<'r>),
     FloatVec(FloatVecReader<'r>),
@@ -2462,258 +2462,258 @@ pub enum TraitTypeUnionReader<'r> {
     FloatRange(FloatRangeReader<'r>),
     MutantRange(MutantRangeReader<'r>),
 }
-impl ::core::default::Default for TraitTypeUnion {
+impl ::core::default::Default for TraitPoolUnion {
     fn default() -> Self {
-        TraitTypeUnion::StringVec(::core::default::Default::default())
+        TraitPoolUnion::StringVec(::core::default::Default::default())
     }
 }
-impl ::core::fmt::Display for TraitTypeUnion {
+impl ::core::fmt::Display for TraitPoolUnion {
     fn fmt(&self, f: &mut ::core::fmt::Formatter) -> ::core::fmt::Result {
         match self {
-            TraitTypeUnion::StringVec(ref item) => {
+            TraitPoolUnion::StringVec(ref item) => {
                 write!(f, "{}::{}({})", Self::NAME, StringVec::NAME, item)
             }
-            TraitTypeUnion::NumberVec(ref item) => {
+            TraitPoolUnion::NumberVec(ref item) => {
                 write!(f, "{}::{}({})", Self::NAME, NumberVec::NAME, item)
             }
-            TraitTypeUnion::FloatVec(ref item) => {
+            TraitPoolUnion::FloatVec(ref item) => {
                 write!(f, "{}::{}({})", Self::NAME, FloatVec::NAME, item)
             }
-            TraitTypeUnion::MutantVec(ref item) => {
+            TraitPoolUnion::MutantVec(ref item) => {
                 write!(f, "{}::{}({})", Self::NAME, MutantVec::NAME, item)
             }
-            TraitTypeUnion::NumberRange(ref item) => {
+            TraitPoolUnion::NumberRange(ref item) => {
                 write!(f, "{}::{}({})", Self::NAME, NumberRange::NAME, item)
             }
-            TraitTypeUnion::FloatRange(ref item) => {
+            TraitPoolUnion::FloatRange(ref item) => {
                 write!(f, "{}::{}({})", Self::NAME, FloatRange::NAME, item)
             }
-            TraitTypeUnion::MutantRange(ref item) => {
+            TraitPoolUnion::MutantRange(ref item) => {
                 write!(f, "{}::{}({})", Self::NAME, MutantRange::NAME, item)
             }
         }
     }
 }
-impl<'r> ::core::fmt::Display for TraitTypeUnionReader<'r> {
+impl<'r> ::core::fmt::Display for TraitPoolUnionReader<'r> {
     fn fmt(&self, f: &mut ::core::fmt::Formatter) -> ::core::fmt::Result {
         match self {
-            TraitTypeUnionReader::StringVec(ref item) => {
+            TraitPoolUnionReader::StringVec(ref item) => {
                 write!(f, "{}::{}({})", Self::NAME, StringVec::NAME, item)
             }
-            TraitTypeUnionReader::NumberVec(ref item) => {
+            TraitPoolUnionReader::NumberVec(ref item) => {
                 write!(f, "{}::{}({})", Self::NAME, NumberVec::NAME, item)
             }
-            TraitTypeUnionReader::FloatVec(ref item) => {
+            TraitPoolUnionReader::FloatVec(ref item) => {
                 write!(f, "{}::{}({})", Self::NAME, FloatVec::NAME, item)
             }
-            TraitTypeUnionReader::MutantVec(ref item) => {
+            TraitPoolUnionReader::MutantVec(ref item) => {
                 write!(f, "{}::{}({})", Self::NAME, MutantVec::NAME, item)
             }
-            TraitTypeUnionReader::NumberRange(ref item) => {
+            TraitPoolUnionReader::NumberRange(ref item) => {
                 write!(f, "{}::{}({})", Self::NAME, NumberRange::NAME, item)
             }
-            TraitTypeUnionReader::FloatRange(ref item) => {
+            TraitPoolUnionReader::FloatRange(ref item) => {
                 write!(f, "{}::{}({})", Self::NAME, FloatRange::NAME, item)
             }
-            TraitTypeUnionReader::MutantRange(ref item) => {
+            TraitPoolUnionReader::MutantRange(ref item) => {
                 write!(f, "{}::{}({})", Self::NAME, MutantRange::NAME, item)
             }
         }
     }
 }
-impl TraitTypeUnion {
+impl TraitPoolUnion {
     pub(crate) fn display_inner(&self, f: &mut ::core::fmt::Formatter) -> ::core::fmt::Result {
         match self {
-            TraitTypeUnion::StringVec(ref item) => write!(f, "{}", item),
-            TraitTypeUnion::NumberVec(ref item) => write!(f, "{}", item),
-            TraitTypeUnion::FloatVec(ref item) => write!(f, "{}", item),
-            TraitTypeUnion::MutantVec(ref item) => write!(f, "{}", item),
-            TraitTypeUnion::NumberRange(ref item) => write!(f, "{}", item),
-            TraitTypeUnion::FloatRange(ref item) => write!(f, "{}", item),
-            TraitTypeUnion::MutantRange(ref item) => write!(f, "{}", item),
+            TraitPoolUnion::StringVec(ref item) => write!(f, "{}", item),
+            TraitPoolUnion::NumberVec(ref item) => write!(f, "{}", item),
+            TraitPoolUnion::FloatVec(ref item) => write!(f, "{}", item),
+            TraitPoolUnion::MutantVec(ref item) => write!(f, "{}", item),
+            TraitPoolUnion::NumberRange(ref item) => write!(f, "{}", item),
+            TraitPoolUnion::FloatRange(ref item) => write!(f, "{}", item),
+            TraitPoolUnion::MutantRange(ref item) => write!(f, "{}", item),
         }
     }
 }
-impl<'r> TraitTypeUnionReader<'r> {
+impl<'r> TraitPoolUnionReader<'r> {
     pub(crate) fn display_inner(&self, f: &mut ::core::fmt::Formatter) -> ::core::fmt::Result {
         match self {
-            TraitTypeUnionReader::StringVec(ref item) => write!(f, "{}", item),
-            TraitTypeUnionReader::NumberVec(ref item) => write!(f, "{}", item),
-            TraitTypeUnionReader::FloatVec(ref item) => write!(f, "{}", item),
-            TraitTypeUnionReader::MutantVec(ref item) => write!(f, "{}", item),
-            TraitTypeUnionReader::NumberRange(ref item) => write!(f, "{}", item),
-            TraitTypeUnionReader::FloatRange(ref item) => write!(f, "{}", item),
-            TraitTypeUnionReader::MutantRange(ref item) => write!(f, "{}", item),
+            TraitPoolUnionReader::StringVec(ref item) => write!(f, "{}", item),
+            TraitPoolUnionReader::NumberVec(ref item) => write!(f, "{}", item),
+            TraitPoolUnionReader::FloatVec(ref item) => write!(f, "{}", item),
+            TraitPoolUnionReader::MutantVec(ref item) => write!(f, "{}", item),
+            TraitPoolUnionReader::NumberRange(ref item) => write!(f, "{}", item),
+            TraitPoolUnionReader::FloatRange(ref item) => write!(f, "{}", item),
+            TraitPoolUnionReader::MutantRange(ref item) => write!(f, "{}", item),
         }
     }
 }
-impl ::core::convert::From<StringVec> for TraitTypeUnion {
+impl ::core::convert::From<StringVec> for TraitPoolUnion {
     fn from(item: StringVec) -> Self {
-        TraitTypeUnion::StringVec(item)
+        TraitPoolUnion::StringVec(item)
     }
 }
-impl ::core::convert::From<NumberVec> for TraitTypeUnion {
+impl ::core::convert::From<NumberVec> for TraitPoolUnion {
     fn from(item: NumberVec) -> Self {
-        TraitTypeUnion::NumberVec(item)
+        TraitPoolUnion::NumberVec(item)
     }
 }
-impl ::core::convert::From<FloatVec> for TraitTypeUnion {
+impl ::core::convert::From<FloatVec> for TraitPoolUnion {
     fn from(item: FloatVec) -> Self {
-        TraitTypeUnion::FloatVec(item)
+        TraitPoolUnion::FloatVec(item)
     }
 }
-impl ::core::convert::From<MutantVec> for TraitTypeUnion {
+impl ::core::convert::From<MutantVec> for TraitPoolUnion {
     fn from(item: MutantVec) -> Self {
-        TraitTypeUnion::MutantVec(item)
+        TraitPoolUnion::MutantVec(item)
     }
 }
-impl ::core::convert::From<NumberRange> for TraitTypeUnion {
+impl ::core::convert::From<NumberRange> for TraitPoolUnion {
     fn from(item: NumberRange) -> Self {
-        TraitTypeUnion::NumberRange(item)
+        TraitPoolUnion::NumberRange(item)
     }
 }
-impl ::core::convert::From<FloatRange> for TraitTypeUnion {
+impl ::core::convert::From<FloatRange> for TraitPoolUnion {
     fn from(item: FloatRange) -> Self {
-        TraitTypeUnion::FloatRange(item)
+        TraitPoolUnion::FloatRange(item)
     }
 }
-impl ::core::convert::From<MutantRange> for TraitTypeUnion {
+impl ::core::convert::From<MutantRange> for TraitPoolUnion {
     fn from(item: MutantRange) -> Self {
-        TraitTypeUnion::MutantRange(item)
+        TraitPoolUnion::MutantRange(item)
     }
 }
-impl<'r> ::core::convert::From<StringVecReader<'r>> for TraitTypeUnionReader<'r> {
+impl<'r> ::core::convert::From<StringVecReader<'r>> for TraitPoolUnionReader<'r> {
     fn from(item: StringVecReader<'r>) -> Self {
-        TraitTypeUnionReader::StringVec(item)
+        TraitPoolUnionReader::StringVec(item)
     }
 }
-impl<'r> ::core::convert::From<NumberVecReader<'r>> for TraitTypeUnionReader<'r> {
+impl<'r> ::core::convert::From<NumberVecReader<'r>> for TraitPoolUnionReader<'r> {
     fn from(item: NumberVecReader<'r>) -> Self {
-        TraitTypeUnionReader::NumberVec(item)
+        TraitPoolUnionReader::NumberVec(item)
     }
 }
-impl<'r> ::core::convert::From<FloatVecReader<'r>> for TraitTypeUnionReader<'r> {
+impl<'r> ::core::convert::From<FloatVecReader<'r>> for TraitPoolUnionReader<'r> {
     fn from(item: FloatVecReader<'r>) -> Self {
-        TraitTypeUnionReader::FloatVec(item)
+        TraitPoolUnionReader::FloatVec(item)
     }
 }
-impl<'r> ::core::convert::From<MutantVecReader<'r>> for TraitTypeUnionReader<'r> {
+impl<'r> ::core::convert::From<MutantVecReader<'r>> for TraitPoolUnionReader<'r> {
     fn from(item: MutantVecReader<'r>) -> Self {
-        TraitTypeUnionReader::MutantVec(item)
+        TraitPoolUnionReader::MutantVec(item)
     }
 }
-impl<'r> ::core::convert::From<NumberRangeReader<'r>> for TraitTypeUnionReader<'r> {
+impl<'r> ::core::convert::From<NumberRangeReader<'r>> for TraitPoolUnionReader<'r> {
     fn from(item: NumberRangeReader<'r>) -> Self {
-        TraitTypeUnionReader::NumberRange(item)
+        TraitPoolUnionReader::NumberRange(item)
     }
 }
-impl<'r> ::core::convert::From<FloatRangeReader<'r>> for TraitTypeUnionReader<'r> {
+impl<'r> ::core::convert::From<FloatRangeReader<'r>> for TraitPoolUnionReader<'r> {
     fn from(item: FloatRangeReader<'r>) -> Self {
-        TraitTypeUnionReader::FloatRange(item)
+        TraitPoolUnionReader::FloatRange(item)
     }
 }
-impl<'r> ::core::convert::From<MutantRangeReader<'r>> for TraitTypeUnionReader<'r> {
+impl<'r> ::core::convert::From<MutantRangeReader<'r>> for TraitPoolUnionReader<'r> {
     fn from(item: MutantRangeReader<'r>) -> Self {
-        TraitTypeUnionReader::MutantRange(item)
+        TraitPoolUnionReader::MutantRange(item)
     }
 }
-impl TraitTypeUnion {
-    pub const NAME: &'static str = "TraitTypeUnion";
+impl TraitPoolUnion {
+    pub const NAME: &'static str = "TraitPoolUnion";
     pub fn as_bytes(&self) -> molecule::bytes::Bytes {
         match self {
-            TraitTypeUnion::StringVec(item) => item.as_bytes(),
-            TraitTypeUnion::NumberVec(item) => item.as_bytes(),
-            TraitTypeUnion::FloatVec(item) => item.as_bytes(),
-            TraitTypeUnion::MutantVec(item) => item.as_bytes(),
-            TraitTypeUnion::NumberRange(item) => item.as_bytes(),
-            TraitTypeUnion::FloatRange(item) => item.as_bytes(),
-            TraitTypeUnion::MutantRange(item) => item.as_bytes(),
+            TraitPoolUnion::StringVec(item) => item.as_bytes(),
+            TraitPoolUnion::NumberVec(item) => item.as_bytes(),
+            TraitPoolUnion::FloatVec(item) => item.as_bytes(),
+            TraitPoolUnion::MutantVec(item) => item.as_bytes(),
+            TraitPoolUnion::NumberRange(item) => item.as_bytes(),
+            TraitPoolUnion::FloatRange(item) => item.as_bytes(),
+            TraitPoolUnion::MutantRange(item) => item.as_bytes(),
         }
     }
     pub fn as_slice(&self) -> &[u8] {
         match self {
-            TraitTypeUnion::StringVec(item) => item.as_slice(),
-            TraitTypeUnion::NumberVec(item) => item.as_slice(),
-            TraitTypeUnion::FloatVec(item) => item.as_slice(),
-            TraitTypeUnion::MutantVec(item) => item.as_slice(),
-            TraitTypeUnion::NumberRange(item) => item.as_slice(),
-            TraitTypeUnion::FloatRange(item) => item.as_slice(),
-            TraitTypeUnion::MutantRange(item) => item.as_slice(),
+            TraitPoolUnion::StringVec(item) => item.as_slice(),
+            TraitPoolUnion::NumberVec(item) => item.as_slice(),
+            TraitPoolUnion::FloatVec(item) => item.as_slice(),
+            TraitPoolUnion::MutantVec(item) => item.as_slice(),
+            TraitPoolUnion::NumberRange(item) => item.as_slice(),
+            TraitPoolUnion::FloatRange(item) => item.as_slice(),
+            TraitPoolUnion::MutantRange(item) => item.as_slice(),
         }
     }
     pub fn item_id(&self) -> molecule::Number {
         match self {
-            TraitTypeUnion::StringVec(_) => 0,
-            TraitTypeUnion::NumberVec(_) => 1,
-            TraitTypeUnion::FloatVec(_) => 2,
-            TraitTypeUnion::MutantVec(_) => 3,
-            TraitTypeUnion::NumberRange(_) => 4,
-            TraitTypeUnion::FloatRange(_) => 5,
-            TraitTypeUnion::MutantRange(_) => 6,
+            TraitPoolUnion::StringVec(_) => 0,
+            TraitPoolUnion::NumberVec(_) => 1,
+            TraitPoolUnion::FloatVec(_) => 2,
+            TraitPoolUnion::MutantVec(_) => 3,
+            TraitPoolUnion::NumberRange(_) => 4,
+            TraitPoolUnion::FloatRange(_) => 5,
+            TraitPoolUnion::MutantRange(_) => 6,
         }
     }
     pub fn item_name(&self) -> &str {
         match self {
-            TraitTypeUnion::StringVec(_) => "StringVec",
-            TraitTypeUnion::NumberVec(_) => "NumberVec",
-            TraitTypeUnion::FloatVec(_) => "FloatVec",
-            TraitTypeUnion::MutantVec(_) => "MutantVec",
-            TraitTypeUnion::NumberRange(_) => "NumberRange",
-            TraitTypeUnion::FloatRange(_) => "FloatRange",
-            TraitTypeUnion::MutantRange(_) => "MutantRange",
+            TraitPoolUnion::StringVec(_) => "StringVec",
+            TraitPoolUnion::NumberVec(_) => "NumberVec",
+            TraitPoolUnion::FloatVec(_) => "FloatVec",
+            TraitPoolUnion::MutantVec(_) => "MutantVec",
+            TraitPoolUnion::NumberRange(_) => "NumberRange",
+            TraitPoolUnion::FloatRange(_) => "FloatRange",
+            TraitPoolUnion::MutantRange(_) => "MutantRange",
         }
     }
-    pub fn as_reader<'r>(&'r self) -> TraitTypeUnionReader<'r> {
+    pub fn as_reader<'r>(&'r self) -> TraitPoolUnionReader<'r> {
         match self {
-            TraitTypeUnion::StringVec(item) => item.as_reader().into(),
-            TraitTypeUnion::NumberVec(item) => item.as_reader().into(),
-            TraitTypeUnion::FloatVec(item) => item.as_reader().into(),
-            TraitTypeUnion::MutantVec(item) => item.as_reader().into(),
-            TraitTypeUnion::NumberRange(item) => item.as_reader().into(),
-            TraitTypeUnion::FloatRange(item) => item.as_reader().into(),
-            TraitTypeUnion::MutantRange(item) => item.as_reader().into(),
+            TraitPoolUnion::StringVec(item) => item.as_reader().into(),
+            TraitPoolUnion::NumberVec(item) => item.as_reader().into(),
+            TraitPoolUnion::FloatVec(item) => item.as_reader().into(),
+            TraitPoolUnion::MutantVec(item) => item.as_reader().into(),
+            TraitPoolUnion::NumberRange(item) => item.as_reader().into(),
+            TraitPoolUnion::FloatRange(item) => item.as_reader().into(),
+            TraitPoolUnion::MutantRange(item) => item.as_reader().into(),
         }
     }
 }
-impl<'r> TraitTypeUnionReader<'r> {
-    pub const NAME: &'r str = "TraitTypeUnionReader";
+impl<'r> TraitPoolUnionReader<'r> {
+    pub const NAME: &'r str = "TraitPoolUnionReader";
     pub fn as_slice(&self) -> &'r [u8] {
         match self {
-            TraitTypeUnionReader::StringVec(item) => item.as_slice(),
-            TraitTypeUnionReader::NumberVec(item) => item.as_slice(),
-            TraitTypeUnionReader::FloatVec(item) => item.as_slice(),
-            TraitTypeUnionReader::MutantVec(item) => item.as_slice(),
-            TraitTypeUnionReader::NumberRange(item) => item.as_slice(),
-            TraitTypeUnionReader::FloatRange(item) => item.as_slice(),
-            TraitTypeUnionReader::MutantRange(item) => item.as_slice(),
+            TraitPoolUnionReader::StringVec(item) => item.as_slice(),
+            TraitPoolUnionReader::NumberVec(item) => item.as_slice(),
+            TraitPoolUnionReader::FloatVec(item) => item.as_slice(),
+            TraitPoolUnionReader::MutantVec(item) => item.as_slice(),
+            TraitPoolUnionReader::NumberRange(item) => item.as_slice(),
+            TraitPoolUnionReader::FloatRange(item) => item.as_slice(),
+            TraitPoolUnionReader::MutantRange(item) => item.as_slice(),
         }
     }
     pub fn item_id(&self) -> molecule::Number {
         match self {
-            TraitTypeUnionReader::StringVec(_) => 0,
-            TraitTypeUnionReader::NumberVec(_) => 1,
-            TraitTypeUnionReader::FloatVec(_) => 2,
-            TraitTypeUnionReader::MutantVec(_) => 3,
-            TraitTypeUnionReader::NumberRange(_) => 4,
-            TraitTypeUnionReader::FloatRange(_) => 5,
-            TraitTypeUnionReader::MutantRange(_) => 6,
+            TraitPoolUnionReader::StringVec(_) => 0,
+            TraitPoolUnionReader::NumberVec(_) => 1,
+            TraitPoolUnionReader::FloatVec(_) => 2,
+            TraitPoolUnionReader::MutantVec(_) => 3,
+            TraitPoolUnionReader::NumberRange(_) => 4,
+            TraitPoolUnionReader::FloatRange(_) => 5,
+            TraitPoolUnionReader::MutantRange(_) => 6,
         }
     }
     pub fn item_name(&self) -> &str {
         match self {
-            TraitTypeUnionReader::StringVec(_) => "StringVec",
-            TraitTypeUnionReader::NumberVec(_) => "NumberVec",
-            TraitTypeUnionReader::FloatVec(_) => "FloatVec",
-            TraitTypeUnionReader::MutantVec(_) => "MutantVec",
-            TraitTypeUnionReader::NumberRange(_) => "NumberRange",
-            TraitTypeUnionReader::FloatRange(_) => "FloatRange",
-            TraitTypeUnionReader::MutantRange(_) => "MutantRange",
+            TraitPoolUnionReader::StringVec(_) => "StringVec",
+            TraitPoolUnionReader::NumberVec(_) => "NumberVec",
+            TraitPoolUnionReader::FloatVec(_) => "FloatVec",
+            TraitPoolUnionReader::MutantVec(_) => "MutantVec",
+            TraitPoolUnionReader::NumberRange(_) => "NumberRange",
+            TraitPoolUnionReader::FloatRange(_) => "FloatRange",
+            TraitPoolUnionReader::MutantRange(_) => "MutantRange",
         }
     }
 }
 #[derive(Clone)]
-pub struct TraitTypeVec(molecule::bytes::Bytes);
-impl ::core::fmt::LowerHex for TraitTypeVec {
+pub struct TraitPoolOpt(molecule::bytes::Bytes);
+impl ::core::fmt::LowerHex for TraitPoolOpt {
     fn fmt(&self, f: &mut ::core::fmt::Formatter) -> ::core::fmt::Result {
         use molecule::hex_string;
         if f.alternate() {
@@ -2722,352 +2722,12 @@ impl ::core::fmt::LowerHex for TraitTypeVec {
         write!(f, "{}", hex_string(self.as_slice()))
     }
 }
-impl ::core::fmt::Debug for TraitTypeVec {
+impl ::core::fmt::Debug for TraitPoolOpt {
     fn fmt(&self, f: &mut ::core::fmt::Formatter) -> ::core::fmt::Result {
         write!(f, "{}({:#x})", Self::NAME, self)
     }
 }
-impl ::core::fmt::Display for TraitTypeVec {
-    fn fmt(&self, f: &mut ::core::fmt::Formatter) -> ::core::fmt::Result {
-        write!(f, "{} [", Self::NAME)?;
-        for i in 0..self.len() {
-            if i == 0 {
-                write!(f, "{}", self.get_unchecked(i))?;
-            } else {
-                write!(f, ", {}", self.get_unchecked(i))?;
-            }
-        }
-        write!(f, "]")
-    }
-}
-impl ::core::default::Default for TraitTypeVec {
-    fn default() -> Self {
-        let v = molecule::bytes::Bytes::from_static(&Self::DEFAULT_VALUE);
-        TraitTypeVec::new_unchecked(v)
-    }
-}
-impl TraitTypeVec {
-    const DEFAULT_VALUE: [u8; 4] = [4, 0, 0, 0];
-    pub fn total_size(&self) -> usize {
-        molecule::unpack_number(self.as_slice()) as usize
-    }
-    pub fn item_count(&self) -> usize {
-        if self.total_size() == molecule::NUMBER_SIZE {
-            0
-        } else {
-            (molecule::unpack_number(&self.as_slice()[molecule::NUMBER_SIZE..]) as usize / 4) - 1
-        }
-    }
-    pub fn len(&self) -> usize {
-        self.item_count()
-    }
-    pub fn is_empty(&self) -> bool {
-        self.len() == 0
-    }
-    pub fn get(&self, idx: usize) -> Option<TraitType> {
-        if idx >= self.len() {
-            None
-        } else {
-            Some(self.get_unchecked(idx))
-        }
-    }
-    pub fn get_unchecked(&self, idx: usize) -> TraitType {
-        let slice = self.as_slice();
-        let start_idx = molecule::NUMBER_SIZE * (1 + idx);
-        let start = molecule::unpack_number(&slice[start_idx..]) as usize;
-        if idx == self.len() - 1 {
-            TraitType::new_unchecked(self.0.slice(start..))
-        } else {
-            let end_idx = start_idx + molecule::NUMBER_SIZE;
-            let end = molecule::unpack_number(&slice[end_idx..]) as usize;
-            TraitType::new_unchecked(self.0.slice(start..end))
-        }
-    }
-    pub fn as_reader<'r>(&'r self) -> TraitTypeVecReader<'r> {
-        TraitTypeVecReader::new_unchecked(self.as_slice())
-    }
-}
-impl molecule::prelude::Entity for TraitTypeVec {
-    type Builder = TraitTypeVecBuilder;
-    const NAME: &'static str = "TraitTypeVec";
-    fn new_unchecked(data: molecule::bytes::Bytes) -> Self {
-        TraitTypeVec(data)
-    }
-    fn as_bytes(&self) -> molecule::bytes::Bytes {
-        self.0.clone()
-    }
-    fn as_slice(&self) -> &[u8] {
-        &self.0[..]
-    }
-    fn from_slice(slice: &[u8]) -> molecule::error::VerificationResult<Self> {
-        TraitTypeVecReader::from_slice(slice).map(|reader| reader.to_entity())
-    }
-    fn from_compatible_slice(slice: &[u8]) -> molecule::error::VerificationResult<Self> {
-        TraitTypeVecReader::from_compatible_slice(slice).map(|reader| reader.to_entity())
-    }
-    fn new_builder() -> Self::Builder {
-        ::core::default::Default::default()
-    }
-    fn as_builder(self) -> Self::Builder {
-        Self::new_builder().extend(self.into_iter())
-    }
-}
-#[derive(Clone, Copy)]
-pub struct TraitTypeVecReader<'r>(&'r [u8]);
-impl<'r> ::core::fmt::LowerHex for TraitTypeVecReader<'r> {
-    fn fmt(&self, f: &mut ::core::fmt::Formatter) -> ::core::fmt::Result {
-        use molecule::hex_string;
-        if f.alternate() {
-            write!(f, "0x")?;
-        }
-        write!(f, "{}", hex_string(self.as_slice()))
-    }
-}
-impl<'r> ::core::fmt::Debug for TraitTypeVecReader<'r> {
-    fn fmt(&self, f: &mut ::core::fmt::Formatter) -> ::core::fmt::Result {
-        write!(f, "{}({:#x})", Self::NAME, self)
-    }
-}
-impl<'r> ::core::fmt::Display for TraitTypeVecReader<'r> {
-    fn fmt(&self, f: &mut ::core::fmt::Formatter) -> ::core::fmt::Result {
-        write!(f, "{} [", Self::NAME)?;
-        for i in 0..self.len() {
-            if i == 0 {
-                write!(f, "{}", self.get_unchecked(i))?;
-            } else {
-                write!(f, ", {}", self.get_unchecked(i))?;
-            }
-        }
-        write!(f, "]")
-    }
-}
-impl<'r> TraitTypeVecReader<'r> {
-    pub fn total_size(&self) -> usize {
-        molecule::unpack_number(self.as_slice()) as usize
-    }
-    pub fn item_count(&self) -> usize {
-        if self.total_size() == molecule::NUMBER_SIZE {
-            0
-        } else {
-            (molecule::unpack_number(&self.as_slice()[molecule::NUMBER_SIZE..]) as usize / 4) - 1
-        }
-    }
-    pub fn len(&self) -> usize {
-        self.item_count()
-    }
-    pub fn is_empty(&self) -> bool {
-        self.len() == 0
-    }
-    pub fn get(&self, idx: usize) -> Option<TraitTypeReader<'r>> {
-        if idx >= self.len() {
-            None
-        } else {
-            Some(self.get_unchecked(idx))
-        }
-    }
-    pub fn get_unchecked(&self, idx: usize) -> TraitTypeReader<'r> {
-        let slice = self.as_slice();
-        let start_idx = molecule::NUMBER_SIZE * (1 + idx);
-        let start = molecule::unpack_number(&slice[start_idx..]) as usize;
-        if idx == self.len() - 1 {
-            TraitTypeReader::new_unchecked(&self.as_slice()[start..])
-        } else {
-            let end_idx = start_idx + molecule::NUMBER_SIZE;
-            let end = molecule::unpack_number(&slice[end_idx..]) as usize;
-            TraitTypeReader::new_unchecked(&self.as_slice()[start..end])
-        }
-    }
-}
-impl<'r> molecule::prelude::Reader<'r> for TraitTypeVecReader<'r> {
-    type Entity = TraitTypeVec;
-    const NAME: &'static str = "TraitTypeVecReader";
-    fn to_entity(&self) -> Self::Entity {
-        Self::Entity::new_unchecked(self.as_slice().to_owned().into())
-    }
-    fn new_unchecked(slice: &'r [u8]) -> Self {
-        TraitTypeVecReader(slice)
-    }
-    fn as_slice(&self) -> &'r [u8] {
-        self.0
-    }
-    fn verify(slice: &[u8], compatible: bool) -> molecule::error::VerificationResult<()> {
-        use molecule::verification_error as ve;
-        let slice_len = slice.len();
-        if slice_len < molecule::NUMBER_SIZE {
-            return ve!(Self, HeaderIsBroken, molecule::NUMBER_SIZE, slice_len);
-        }
-        let total_size = molecule::unpack_number(slice) as usize;
-        if slice_len != total_size {
-            return ve!(Self, TotalSizeNotMatch, total_size, slice_len);
-        }
-        if slice_len == molecule::NUMBER_SIZE {
-            return Ok(());
-        }
-        if slice_len < molecule::NUMBER_SIZE * 2 {
-            return ve!(
-                Self,
-                TotalSizeNotMatch,
-                molecule::NUMBER_SIZE * 2,
-                slice_len
-            );
-        }
-        let offset_first = molecule::unpack_number(&slice[molecule::NUMBER_SIZE..]) as usize;
-        if offset_first % molecule::NUMBER_SIZE != 0 || offset_first < molecule::NUMBER_SIZE * 2 {
-            return ve!(Self, OffsetsNotMatch);
-        }
-        if slice_len < offset_first {
-            return ve!(Self, HeaderIsBroken, offset_first, slice_len);
-        }
-        let mut offsets: Vec<usize> = slice[molecule::NUMBER_SIZE..offset_first]
-            .chunks_exact(molecule::NUMBER_SIZE)
-            .map(|x| molecule::unpack_number(x) as usize)
-            .collect();
-        offsets.push(total_size);
-        if offsets.windows(2).any(|i| i[0] > i[1]) {
-            return ve!(Self, OffsetsNotMatch);
-        }
-        for pair in offsets.windows(2) {
-            let start = pair[0];
-            let end = pair[1];
-            TraitTypeReader::verify(&slice[start..end], compatible)?;
-        }
-        Ok(())
-    }
-}
-#[derive(Clone, Debug, Default)]
-pub struct TraitTypeVecBuilder(pub(crate) Vec<TraitType>);
-impl TraitTypeVecBuilder {
-    pub fn set(mut self, v: Vec<TraitType>) -> Self {
-        self.0 = v;
-        self
-    }
-    pub fn push(mut self, v: TraitType) -> Self {
-        self.0.push(v);
-        self
-    }
-    pub fn extend<T: ::core::iter::IntoIterator<Item = TraitType>>(mut self, iter: T) -> Self {
-        for elem in iter {
-            self.0.push(elem);
-        }
-        self
-    }
-    pub fn replace(&mut self, index: usize, v: TraitType) -> Option<TraitType> {
-        self.0
-            .get_mut(index)
-            .map(|item| ::core::mem::replace(item, v))
-    }
-}
-impl molecule::prelude::Builder for TraitTypeVecBuilder {
-    type Entity = TraitTypeVec;
-    const NAME: &'static str = "TraitTypeVecBuilder";
-    fn expected_length(&self) -> usize {
-        molecule::NUMBER_SIZE * (self.0.len() + 1)
-            + self
-                .0
-                .iter()
-                .map(|inner| inner.as_slice().len())
-                .sum::<usize>()
-    }
-    fn write<W: molecule::io::Write>(&self, writer: &mut W) -> molecule::io::Result<()> {
-        let item_count = self.0.len();
-        if item_count == 0 {
-            writer.write_all(&molecule::pack_number(
-                molecule::NUMBER_SIZE as molecule::Number,
-            ))?;
-        } else {
-            let (total_size, offsets) = self.0.iter().fold(
-                (
-                    molecule::NUMBER_SIZE * (item_count + 1),
-                    Vec::with_capacity(item_count),
-                ),
-                |(start, mut offsets), inner| {
-                    offsets.push(start);
-                    (start + inner.as_slice().len(), offsets)
-                },
-            );
-            writer.write_all(&molecule::pack_number(total_size as molecule::Number))?;
-            for offset in offsets.into_iter() {
-                writer.write_all(&molecule::pack_number(offset as molecule::Number))?;
-            }
-            for inner in self.0.iter() {
-                writer.write_all(inner.as_slice())?;
-            }
-        }
-        Ok(())
-    }
-    fn build(&self) -> Self::Entity {
-        let mut inner = Vec::with_capacity(self.expected_length());
-        self.write(&mut inner)
-            .unwrap_or_else(|_| panic!("{} build should be ok", Self::NAME));
-        TraitTypeVec::new_unchecked(inner.into())
-    }
-}
-pub struct TraitTypeVecIterator(TraitTypeVec, usize, usize);
-impl ::core::iter::Iterator for TraitTypeVecIterator {
-    type Item = TraitType;
-    fn next(&mut self) -> Option<Self::Item> {
-        if self.1 >= self.2 {
-            None
-        } else {
-            let ret = self.0.get_unchecked(self.1);
-            self.1 += 1;
-            Some(ret)
-        }
-    }
-}
-impl ::core::iter::ExactSizeIterator for TraitTypeVecIterator {
-    fn len(&self) -> usize {
-        self.2 - self.1
-    }
-}
-impl ::core::iter::IntoIterator for TraitTypeVec {
-    type Item = TraitType;
-    type IntoIter = TraitTypeVecIterator;
-    fn into_iter(self) -> Self::IntoIter {
-        let len = self.len();
-        TraitTypeVecIterator(self, 0, len)
-    }
-}
-impl<'r> TraitTypeVecReader<'r> {
-    pub fn iter<'t>(&'t self) -> TraitTypeVecReaderIterator<'t, 'r> {
-        TraitTypeVecReaderIterator(&self, 0, self.len())
-    }
-}
-pub struct TraitTypeVecReaderIterator<'t, 'r>(&'t TraitTypeVecReader<'r>, usize, usize);
-impl<'t: 'r, 'r> ::core::iter::Iterator for TraitTypeVecReaderIterator<'t, 'r> {
-    type Item = TraitTypeReader<'t>;
-    fn next(&mut self) -> Option<Self::Item> {
-        if self.1 >= self.2 {
-            None
-        } else {
-            let ret = self.0.get_unchecked(self.1);
-            self.1 += 1;
-            Some(ret)
-        }
-    }
-}
-impl<'t: 'r, 'r> ::core::iter::ExactSizeIterator for TraitTypeVecReaderIterator<'t, 'r> {
-    fn len(&self) -> usize {
-        self.2 - self.1
-    }
-}
-#[derive(Clone)]
-pub struct TraitTypeVecOpt(molecule::bytes::Bytes);
-impl ::core::fmt::LowerHex for TraitTypeVecOpt {
-    fn fmt(&self, f: &mut ::core::fmt::Formatter) -> ::core::fmt::Result {
-        use molecule::hex_string;
-        if f.alternate() {
-            write!(f, "0x")?;
-        }
-        write!(f, "{}", hex_string(self.as_slice()))
-    }
-}
-impl ::core::fmt::Debug for TraitTypeVecOpt {
-    fn fmt(&self, f: &mut ::core::fmt::Formatter) -> ::core::fmt::Result {
-        write!(f, "{}({:#x})", Self::NAME, self)
-    }
-}
-impl ::core::fmt::Display for TraitTypeVecOpt {
+impl ::core::fmt::Display for TraitPoolOpt {
     fn fmt(&self, f: &mut ::core::fmt::Formatter) -> ::core::fmt::Result {
         if let Some(v) = self.to_opt() {
             write!(f, "{}(Some({}))", Self::NAME, v)
@@ -3076,13 +2736,13 @@ impl ::core::fmt::Display for TraitTypeVecOpt {
         }
     }
 }
-impl ::core::default::Default for TraitTypeVecOpt {
+impl ::core::default::Default for TraitPoolOpt {
     fn default() -> Self {
         let v = molecule::bytes::Bytes::from_static(&Self::DEFAULT_VALUE);
-        TraitTypeVecOpt::new_unchecked(v)
+        TraitPoolOpt::new_unchecked(v)
     }
 }
-impl TraitTypeVecOpt {
+impl TraitPoolOpt {
     const DEFAULT_VALUE: [u8; 0] = [];
     pub fn is_none(&self) -> bool {
         self.0.is_empty()
@@ -3090,22 +2750,22 @@ impl TraitTypeVecOpt {
     pub fn is_some(&self) -> bool {
         !self.0.is_empty()
     }
-    pub fn to_opt(&self) -> Option<TraitTypeVec> {
+    pub fn to_opt(&self) -> Option<TraitPool> {
         if self.is_none() {
             None
         } else {
-            Some(TraitTypeVec::new_unchecked(self.0.clone()))
+            Some(TraitPool::new_unchecked(self.0.clone()))
         }
     }
-    pub fn as_reader<'r>(&'r self) -> TraitTypeVecOptReader<'r> {
-        TraitTypeVecOptReader::new_unchecked(self.as_slice())
+    pub fn as_reader<'r>(&'r self) -> TraitPoolOptReader<'r> {
+        TraitPoolOptReader::new_unchecked(self.as_slice())
     }
 }
-impl molecule::prelude::Entity for TraitTypeVecOpt {
-    type Builder = TraitTypeVecOptBuilder;
-    const NAME: &'static str = "TraitTypeVecOpt";
+impl molecule::prelude::Entity for TraitPoolOpt {
+    type Builder = TraitPoolOptBuilder;
+    const NAME: &'static str = "TraitPoolOpt";
     fn new_unchecked(data: molecule::bytes::Bytes) -> Self {
-        TraitTypeVecOpt(data)
+        TraitPoolOpt(data)
     }
     fn as_bytes(&self) -> molecule::bytes::Bytes {
         self.0.clone()
@@ -3114,10 +2774,10 @@ impl molecule::prelude::Entity for TraitTypeVecOpt {
         &self.0[..]
     }
     fn from_slice(slice: &[u8]) -> molecule::error::VerificationResult<Self> {
-        TraitTypeVecOptReader::from_slice(slice).map(|reader| reader.to_entity())
+        TraitPoolOptReader::from_slice(slice).map(|reader| reader.to_entity())
     }
     fn from_compatible_slice(slice: &[u8]) -> molecule::error::VerificationResult<Self> {
-        TraitTypeVecOptReader::from_compatible_slice(slice).map(|reader| reader.to_entity())
+        TraitPoolOptReader::from_compatible_slice(slice).map(|reader| reader.to_entity())
     }
     fn new_builder() -> Self::Builder {
         ::core::default::Default::default()
@@ -3127,8 +2787,8 @@ impl molecule::prelude::Entity for TraitTypeVecOpt {
     }
 }
 #[derive(Clone, Copy)]
-pub struct TraitTypeVecOptReader<'r>(&'r [u8]);
-impl<'r> ::core::fmt::LowerHex for TraitTypeVecOptReader<'r> {
+pub struct TraitPoolOptReader<'r>(&'r [u8]);
+impl<'r> ::core::fmt::LowerHex for TraitPoolOptReader<'r> {
     fn fmt(&self, f: &mut ::core::fmt::Formatter) -> ::core::fmt::Result {
         use molecule::hex_string;
         if f.alternate() {
@@ -3137,12 +2797,12 @@ impl<'r> ::core::fmt::LowerHex for TraitTypeVecOptReader<'r> {
         write!(f, "{}", hex_string(self.as_slice()))
     }
 }
-impl<'r> ::core::fmt::Debug for TraitTypeVecOptReader<'r> {
+impl<'r> ::core::fmt::Debug for TraitPoolOptReader<'r> {
     fn fmt(&self, f: &mut ::core::fmt::Formatter) -> ::core::fmt::Result {
         write!(f, "{}({:#x})", Self::NAME, self)
     }
 }
-impl<'r> ::core::fmt::Display for TraitTypeVecOptReader<'r> {
+impl<'r> ::core::fmt::Display for TraitPoolOptReader<'r> {
     fn fmt(&self, f: &mut ::core::fmt::Formatter) -> ::core::fmt::Result {
         if let Some(v) = self.to_opt() {
             write!(f, "{}(Some({}))", Self::NAME, v)
@@ -3151,51 +2811,51 @@ impl<'r> ::core::fmt::Display for TraitTypeVecOptReader<'r> {
         }
     }
 }
-impl<'r> TraitTypeVecOptReader<'r> {
+impl<'r> TraitPoolOptReader<'r> {
     pub fn is_none(&self) -> bool {
         self.0.is_empty()
     }
     pub fn is_some(&self) -> bool {
         !self.0.is_empty()
     }
-    pub fn to_opt(&self) -> Option<TraitTypeVecReader<'r>> {
+    pub fn to_opt(&self) -> Option<TraitPoolReader<'r>> {
         if self.is_none() {
             None
         } else {
-            Some(TraitTypeVecReader::new_unchecked(self.as_slice()))
+            Some(TraitPoolReader::new_unchecked(self.as_slice()))
         }
     }
 }
-impl<'r> molecule::prelude::Reader<'r> for TraitTypeVecOptReader<'r> {
-    type Entity = TraitTypeVecOpt;
-    const NAME: &'static str = "TraitTypeVecOptReader";
+impl<'r> molecule::prelude::Reader<'r> for TraitPoolOptReader<'r> {
+    type Entity = TraitPoolOpt;
+    const NAME: &'static str = "TraitPoolOptReader";
     fn to_entity(&self) -> Self::Entity {
         Self::Entity::new_unchecked(self.as_slice().to_owned().into())
     }
     fn new_unchecked(slice: &'r [u8]) -> Self {
-        TraitTypeVecOptReader(slice)
+        TraitPoolOptReader(slice)
     }
     fn as_slice(&self) -> &'r [u8] {
         self.0
     }
     fn verify(slice: &[u8], compatible: bool) -> molecule::error::VerificationResult<()> {
         if !slice.is_empty() {
-            TraitTypeVecReader::verify(&slice[..], compatible)?;
+            TraitPoolReader::verify(&slice[..], compatible)?;
         }
         Ok(())
     }
 }
 #[derive(Clone, Debug, Default)]
-pub struct TraitTypeVecOptBuilder(pub(crate) Option<TraitTypeVec>);
-impl TraitTypeVecOptBuilder {
-    pub fn set(mut self, v: Option<TraitTypeVec>) -> Self {
+pub struct TraitPoolOptBuilder(pub(crate) Option<TraitPool>);
+impl TraitPoolOptBuilder {
+    pub fn set(mut self, v: Option<TraitPool>) -> Self {
         self.0 = v;
         self
     }
 }
-impl molecule::prelude::Builder for TraitTypeVecOptBuilder {
-    type Entity = TraitTypeVecOpt;
-    const NAME: &'static str = "TraitTypeVecOptBuilder";
+impl molecule::prelude::Builder for TraitPoolOptBuilder {
+    type Entity = TraitPoolOpt;
+    const NAME: &'static str = "TraitPoolOptBuilder";
     fn expected_length(&self) -> usize {
         self.0
             .as_ref()
@@ -3212,7 +2872,7 @@ impl molecule::prelude::Builder for TraitTypeVecOptBuilder {
         let mut inner = Vec::with_capacity(self.expected_length());
         self.write(&mut inner)
             .unwrap_or_else(|_| panic!("{} build should be ok", Self::NAME));
-        TraitTypeVecOpt::new_unchecked(inner.into())
+        TraitPoolOpt::new_unchecked(inner.into())
     }
 }
 #[derive(Clone)]
@@ -3235,7 +2895,7 @@ impl ::core::fmt::Display for TraitSchema {
     fn fmt(&self, f: &mut ::core::fmt::Formatter) -> ::core::fmt::Result {
         write!(f, "{} {{ ", Self::NAME)?;
         write!(f, "{}: {}", "byte_length", self.byte_length())?;
-        write!(f, ", {}: {}", "traits_pool", self.traits_pool())?;
+        write!(f, ", {}: {}", "trait_pool", self.trait_pool())?;
         let extra_count = self.count_extra_fields();
         if extra_count != 0 {
             write!(f, ", .. ({} fields)", extra_count)?;
@@ -3274,14 +2934,14 @@ impl TraitSchema {
         let end = molecule::unpack_number(&slice[8..]) as usize;
         Byte::new_unchecked(self.0.slice(start..end))
     }
-    pub fn traits_pool(&self) -> TraitTypeVecOpt {
+    pub fn trait_pool(&self) -> TraitPoolOpt {
         let slice = self.as_slice();
         let start = molecule::unpack_number(&slice[8..]) as usize;
         if self.has_extra_fields() {
             let end = molecule::unpack_number(&slice[12..]) as usize;
-            TraitTypeVecOpt::new_unchecked(self.0.slice(start..end))
+            TraitPoolOpt::new_unchecked(self.0.slice(start..end))
         } else {
-            TraitTypeVecOpt::new_unchecked(self.0.slice(start..))
+            TraitPoolOpt::new_unchecked(self.0.slice(start..))
         }
     }
     pub fn as_reader<'r>(&'r self) -> TraitSchemaReader<'r> {
@@ -3312,7 +2972,7 @@ impl molecule::prelude::Entity for TraitSchema {
     fn as_builder(self) -> Self::Builder {
         Self::new_builder()
             .byte_length(self.byte_length())
-            .traits_pool(self.traits_pool())
+            .trait_pool(self.trait_pool())
     }
 }
 #[derive(Clone, Copy)]
@@ -3335,7 +2995,7 @@ impl<'r> ::core::fmt::Display for TraitSchemaReader<'r> {
     fn fmt(&self, f: &mut ::core::fmt::Formatter) -> ::core::fmt::Result {
         write!(f, "{} {{ ", Self::NAME)?;
         write!(f, "{}: {}", "byte_length", self.byte_length())?;
-        write!(f, ", {}: {}", "traits_pool", self.traits_pool())?;
+        write!(f, ", {}: {}", "trait_pool", self.trait_pool())?;
         let extra_count = self.count_extra_fields();
         if extra_count != 0 {
             write!(f, ", .. ({} fields)", extra_count)?;
@@ -3367,14 +3027,14 @@ impl<'r> TraitSchemaReader<'r> {
         let end = molecule::unpack_number(&slice[8..]) as usize;
         ByteReader::new_unchecked(&self.as_slice()[start..end])
     }
-    pub fn traits_pool(&self) -> TraitTypeVecOptReader<'r> {
+    pub fn trait_pool(&self) -> TraitPoolOptReader<'r> {
         let slice = self.as_slice();
         let start = molecule::unpack_number(&slice[8..]) as usize;
         if self.has_extra_fields() {
             let end = molecule::unpack_number(&slice[12..]) as usize;
-            TraitTypeVecOptReader::new_unchecked(&self.as_slice()[start..end])
+            TraitPoolOptReader::new_unchecked(&self.as_slice()[start..end])
         } else {
-            TraitTypeVecOptReader::new_unchecked(&self.as_slice()[start..])
+            TraitPoolOptReader::new_unchecked(&self.as_slice()[start..])
         }
     }
 }
@@ -3425,14 +3085,14 @@ impl<'r> molecule::prelude::Reader<'r> for TraitSchemaReader<'r> {
             return ve!(Self, OffsetsNotMatch);
         }
         ByteReader::verify(&slice[offsets[0]..offsets[1]], compatible)?;
-        TraitTypeVecOptReader::verify(&slice[offsets[1]..offsets[2]], compatible)?;
+        TraitPoolOptReader::verify(&slice[offsets[1]..offsets[2]], compatible)?;
         Ok(())
     }
 }
 #[derive(Clone, Debug, Default)]
 pub struct TraitSchemaBuilder {
     pub(crate) byte_length: Byte,
-    pub(crate) traits_pool: TraitTypeVecOpt,
+    pub(crate) trait_pool: TraitPoolOpt,
 }
 impl TraitSchemaBuilder {
     pub const FIELD_COUNT: usize = 2;
@@ -3440,8 +3100,8 @@ impl TraitSchemaBuilder {
         self.byte_length = v;
         self
     }
-    pub fn traits_pool(mut self, v: TraitTypeVecOpt) -> Self {
-        self.traits_pool = v;
+    pub fn trait_pool(mut self, v: TraitPoolOpt) -> Self {
+        self.trait_pool = v;
         self
     }
 }
@@ -3451,7 +3111,7 @@ impl molecule::prelude::Builder for TraitSchemaBuilder {
     fn expected_length(&self) -> usize {
         molecule::NUMBER_SIZE * (Self::FIELD_COUNT + 1)
             + self.byte_length.as_slice().len()
-            + self.traits_pool.as_slice().len()
+            + self.trait_pool.as_slice().len()
     }
     fn write<W: molecule::io::Write>(&self, writer: &mut W) -> molecule::io::Result<()> {
         let mut total_size = molecule::NUMBER_SIZE * (Self::FIELD_COUNT + 1);
@@ -3459,13 +3119,13 @@ impl molecule::prelude::Builder for TraitSchemaBuilder {
         offsets.push(total_size);
         total_size += self.byte_length.as_slice().len();
         offsets.push(total_size);
-        total_size += self.traits_pool.as_slice().len();
+        total_size += self.trait_pool.as_slice().len();
         writer.write_all(&molecule::pack_number(total_size as molecule::Number))?;
         for offset in offsets.into_iter() {
             writer.write_all(&molecule::pack_number(offset as molecule::Number))?;
         }
         writer.write_all(self.byte_length.as_slice())?;
-        writer.write_all(self.traits_pool.as_slice())?;
+        writer.write_all(self.trait_pool.as_slice())?;
         Ok(())
     }
     fn build(&self) -> Self::Entity {
@@ -3835,7 +3495,7 @@ impl ::core::fmt::Display for Trait {
     fn fmt(&self, f: &mut ::core::fmt::Formatter) -> ::core::fmt::Result {
         write!(f, "{} {{ ", Self::NAME)?;
         write!(f, "{}: {}", "name", self.name())?;
-        write!(f, ", {}: {}", "traits", self.traits())?;
+        write!(f, ", {}: {}", "schema_pool", self.schema_pool())?;
         let extra_count = self.count_extra_fields();
         if extra_count != 0 {
             write!(f, ", .. ({} fields)", extra_count)?;
@@ -3876,7 +3536,7 @@ impl Trait {
         let end = molecule::unpack_number(&slice[8..]) as usize;
         String::new_unchecked(self.0.slice(start..end))
     }
-    pub fn traits(&self) -> TraitSchemaVec {
+    pub fn schema_pool(&self) -> TraitSchemaVec {
         let slice = self.as_slice();
         let start = molecule::unpack_number(&slice[8..]) as usize;
         if self.has_extra_fields() {
@@ -3912,7 +3572,9 @@ impl molecule::prelude::Entity for Trait {
         ::core::default::Default::default()
     }
     fn as_builder(self) -> Self::Builder {
-        Self::new_builder().name(self.name()).traits(self.traits())
+        Self::new_builder()
+            .name(self.name())
+            .schema_pool(self.schema_pool())
     }
 }
 #[derive(Clone, Copy)]
@@ -3935,7 +3597,7 @@ impl<'r> ::core::fmt::Display for TraitReader<'r> {
     fn fmt(&self, f: &mut ::core::fmt::Formatter) -> ::core::fmt::Result {
         write!(f, "{} {{ ", Self::NAME)?;
         write!(f, "{}: {}", "name", self.name())?;
-        write!(f, ", {}: {}", "traits", self.traits())?;
+        write!(f, ", {}: {}", "schema_pool", self.schema_pool())?;
         let extra_count = self.count_extra_fields();
         if extra_count != 0 {
             write!(f, ", .. ({} fields)", extra_count)?;
@@ -3967,7 +3629,7 @@ impl<'r> TraitReader<'r> {
         let end = molecule::unpack_number(&slice[8..]) as usize;
         StringReader::new_unchecked(&self.as_slice()[start..end])
     }
-    pub fn traits(&self) -> TraitSchemaVecReader<'r> {
+    pub fn schema_pool(&self) -> TraitSchemaVecReader<'r> {
         let slice = self.as_slice();
         let start = molecule::unpack_number(&slice[8..]) as usize;
         if self.has_extra_fields() {
@@ -4032,7 +3694,7 @@ impl<'r> molecule::prelude::Reader<'r> for TraitReader<'r> {
 #[derive(Clone, Debug, Default)]
 pub struct TraitBuilder {
     pub(crate) name: String,
-    pub(crate) traits: TraitSchemaVec,
+    pub(crate) schema_pool: TraitSchemaVec,
 }
 impl TraitBuilder {
     pub const FIELD_COUNT: usize = 2;
@@ -4040,8 +3702,8 @@ impl TraitBuilder {
         self.name = v;
         self
     }
-    pub fn traits(mut self, v: TraitSchemaVec) -> Self {
-        self.traits = v;
+    pub fn schema_pool(mut self, v: TraitSchemaVec) -> Self {
+        self.schema_pool = v;
         self
     }
 }
@@ -4051,7 +3713,7 @@ impl molecule::prelude::Builder for TraitBuilder {
     fn expected_length(&self) -> usize {
         molecule::NUMBER_SIZE * (Self::FIELD_COUNT + 1)
             + self.name.as_slice().len()
-            + self.traits.as_slice().len()
+            + self.schema_pool.as_slice().len()
     }
     fn write<W: molecule::io::Write>(&self, writer: &mut W) -> molecule::io::Result<()> {
         let mut total_size = molecule::NUMBER_SIZE * (Self::FIELD_COUNT + 1);
@@ -4059,13 +3721,13 @@ impl molecule::prelude::Builder for TraitBuilder {
         offsets.push(total_size);
         total_size += self.name.as_slice().len();
         offsets.push(total_size);
-        total_size += self.traits.as_slice().len();
+        total_size += self.schema_pool.as_slice().len();
         writer.write_all(&molecule::pack_number(total_size as molecule::Number))?;
         for offset in offsets.into_iter() {
             writer.write_all(&molecule::pack_number(offset as molecule::Number))?;
         }
         writer.write_all(self.name.as_slice())?;
-        writer.write_all(self.traits.as_slice())?;
+        writer.write_all(self.schema_pool.as_slice())?;
         Ok(())
     }
     fn build(&self) -> Self::Entity {
