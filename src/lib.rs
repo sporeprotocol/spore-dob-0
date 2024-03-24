@@ -48,7 +48,7 @@ mod test {
     }
 
     #[test]
-    fn test_decode() {
+    fn test_dna_decode() {
         let pool_string_vec = trait_schema!(1, StringVec, vec!["white", "blue", "green"]);
         let pool_number_vec = trait_schema!(1, NumberVec, vec![100, 200, 300, 500]);
         let pool_float_vec = trait_schema!(1, FloatVec, (vec![1, 2, 3, 4, 5], 10));
@@ -66,15 +66,18 @@ mod test {
             .push(trait_pool!("skill", pool_number_range, pool_mutant_range))
             .push(trait_pool!("lucky", pool_none))
             .build();
+        let spore_dna = vec![2, 0, 3, 13, 24, 101, 9, 240];
+        println!("hexed_trats_base = {}", hex::encode(traits_base.as_slice()));
+        println!("hexed_spore_dna = {}", hex::encode(&spore_dna));
 
         let dna_traits = dobs_decode(Parameters {
-            spore_dna: vec![2, 0, 3, 13, 24, 101, 9, 240],
+            spore_dna,
             block_number: 1250945,
             traits_base,
         })
         .map_err(|error| format!("error code = {}", error as u64))
         .unwrap();
 
-        println!("dna_traits = {}", String::from_utf8_lossy(&dna_traits));
+        println!("output = {}", String::from_utf8_lossy(&dna_traits));
     }
 }

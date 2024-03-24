@@ -29,9 +29,7 @@ pub fn dobs_parse_parameters(argc: u64, argv: *const *const i8) -> Result<Parame
         if value.is_empty() || value.len() % 2 != 0 {
             return Err(Error::ParseInvalidSporeDNA);
         }
-        let mut dna = Vec::with_capacity(value.len() / 2);
-        faster_hex::hex_decode(&value, &mut dna).map_err(|_| Error::ParseInvalidSporeDNA)?;
-        dna
+        hex::decode(&value).map_err(|_| Error::ParseInvalidSporeDNA)?
     };
     let block_number = {
         let value = String::from_utf8_lossy(&params[1]);
@@ -42,8 +40,7 @@ pub fn dobs_parse_parameters(argc: u64, argv: *const *const i8) -> Result<Parame
         if value.len() % 2 != 0 {
             return Err(Error::ParseInvalidSporeDNA);
         }
-        let mut traits = Vec::with_capacity(value.len() / 2);
-        faster_hex::hex_decode(&value, &mut traits).map_err(|_| Error::ParseInvalidTraitsBase)?;
+        let traits = hex::decode(&value).map_err(|_| Error::ParseInvalidTraitsBase)?;
         TraitsBase::from_compatible_slice(&traits).map_err(|_| Error::ParseInvalidTraitsBase)?
     };
     Ok(Parameters {
