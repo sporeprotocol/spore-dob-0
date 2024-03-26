@@ -1020,179 +1020,6 @@ impl molecule::prelude::Builder for NumberRangeBuilder {
     }
 }
 #[derive(Clone)]
-pub struct MutantRange(molecule::bytes::Bytes);
-impl ::core::fmt::LowerHex for MutantRange {
-    fn fmt(&self, f: &mut ::core::fmt::Formatter) -> ::core::fmt::Result {
-        use molecule::hex_string;
-        if f.alternate() {
-            write!(f, "0x")?;
-        }
-        write!(f, "{}", hex_string(self.as_slice()))
-    }
-}
-impl ::core::fmt::Debug for MutantRange {
-    fn fmt(&self, f: &mut ::core::fmt::Formatter) -> ::core::fmt::Result {
-        write!(f, "{}({:#x})", Self::NAME, self)
-    }
-}
-impl ::core::fmt::Display for MutantRange {
-    fn fmt(&self, f: &mut ::core::fmt::Formatter) -> ::core::fmt::Result {
-        write!(f, "{} [", Self::NAME)?;
-        write!(f, "{}", self.nth0())?;
-        write!(f, ", {}", self.nth1())?;
-        write!(f, "]")
-    }
-}
-impl ::core::default::Default for MutantRange {
-    fn default() -> Self {
-        let v = molecule::bytes::Bytes::from_static(&Self::DEFAULT_VALUE);
-        MutantRange::new_unchecked(v)
-    }
-}
-impl MutantRange {
-    const DEFAULT_VALUE: [u8; 16] = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
-    pub const TOTAL_SIZE: usize = 16;
-    pub const ITEM_SIZE: usize = 8;
-    pub const ITEM_COUNT: usize = 2;
-    pub fn nth0(&self) -> Number {
-        Number::new_unchecked(self.0.slice(0..8))
-    }
-    pub fn nth1(&self) -> Number {
-        Number::new_unchecked(self.0.slice(8..16))
-    }
-    pub fn as_reader<'r>(&'r self) -> MutantRangeReader<'r> {
-        MutantRangeReader::new_unchecked(self.as_slice())
-    }
-}
-impl molecule::prelude::Entity for MutantRange {
-    type Builder = MutantRangeBuilder;
-    const NAME: &'static str = "MutantRange";
-    fn new_unchecked(data: molecule::bytes::Bytes) -> Self {
-        MutantRange(data)
-    }
-    fn as_bytes(&self) -> molecule::bytes::Bytes {
-        self.0.clone()
-    }
-    fn as_slice(&self) -> &[u8] {
-        &self.0[..]
-    }
-    fn from_slice(slice: &[u8]) -> molecule::error::VerificationResult<Self> {
-        MutantRangeReader::from_slice(slice).map(|reader| reader.to_entity())
-    }
-    fn from_compatible_slice(slice: &[u8]) -> molecule::error::VerificationResult<Self> {
-        MutantRangeReader::from_compatible_slice(slice).map(|reader| reader.to_entity())
-    }
-    fn new_builder() -> Self::Builder {
-        ::core::default::Default::default()
-    }
-    fn as_builder(self) -> Self::Builder {
-        Self::new_builder().set([self.nth0(), self.nth1()])
-    }
-}
-#[derive(Clone, Copy)]
-pub struct MutantRangeReader<'r>(&'r [u8]);
-impl<'r> ::core::fmt::LowerHex for MutantRangeReader<'r> {
-    fn fmt(&self, f: &mut ::core::fmt::Formatter) -> ::core::fmt::Result {
-        use molecule::hex_string;
-        if f.alternate() {
-            write!(f, "0x")?;
-        }
-        write!(f, "{}", hex_string(self.as_slice()))
-    }
-}
-impl<'r> ::core::fmt::Debug for MutantRangeReader<'r> {
-    fn fmt(&self, f: &mut ::core::fmt::Formatter) -> ::core::fmt::Result {
-        write!(f, "{}({:#x})", Self::NAME, self)
-    }
-}
-impl<'r> ::core::fmt::Display for MutantRangeReader<'r> {
-    fn fmt(&self, f: &mut ::core::fmt::Formatter) -> ::core::fmt::Result {
-        write!(f, "{} [", Self::NAME)?;
-        write!(f, "{}", self.nth0())?;
-        write!(f, ", {}", self.nth1())?;
-        write!(f, "]")
-    }
-}
-impl<'r> MutantRangeReader<'r> {
-    pub const TOTAL_SIZE: usize = 16;
-    pub const ITEM_SIZE: usize = 8;
-    pub const ITEM_COUNT: usize = 2;
-    pub fn nth0(&self) -> NumberReader<'r> {
-        NumberReader::new_unchecked(&self.as_slice()[0..8])
-    }
-    pub fn nth1(&self) -> NumberReader<'r> {
-        NumberReader::new_unchecked(&self.as_slice()[8..16])
-    }
-}
-impl<'r> molecule::prelude::Reader<'r> for MutantRangeReader<'r> {
-    type Entity = MutantRange;
-    const NAME: &'static str = "MutantRangeReader";
-    fn to_entity(&self) -> Self::Entity {
-        Self::Entity::new_unchecked(self.as_slice().to_owned().into())
-    }
-    fn new_unchecked(slice: &'r [u8]) -> Self {
-        MutantRangeReader(slice)
-    }
-    fn as_slice(&self) -> &'r [u8] {
-        self.0
-    }
-    fn verify(slice: &[u8], _compatible: bool) -> molecule::error::VerificationResult<()> {
-        use molecule::verification_error as ve;
-        let slice_len = slice.len();
-        if slice_len != Self::TOTAL_SIZE {
-            return ve!(Self, TotalSizeNotMatch, Self::TOTAL_SIZE, slice_len);
-        }
-        Ok(())
-    }
-}
-#[derive(Clone)]
-pub struct MutantRangeBuilder(pub(crate) [Number; 2]);
-impl ::core::fmt::Debug for MutantRangeBuilder {
-    fn fmt(&self, f: &mut ::core::fmt::Formatter) -> ::core::fmt::Result {
-        write!(f, "{}({:?})", Self::NAME, &self.0[..])
-    }
-}
-impl ::core::default::Default for MutantRangeBuilder {
-    fn default() -> Self {
-        MutantRangeBuilder([Number::default(), Number::default()])
-    }
-}
-impl MutantRangeBuilder {
-    pub const TOTAL_SIZE: usize = 16;
-    pub const ITEM_SIZE: usize = 8;
-    pub const ITEM_COUNT: usize = 2;
-    pub fn set(mut self, v: [Number; 2]) -> Self {
-        self.0 = v;
-        self
-    }
-    pub fn nth0(mut self, v: Number) -> Self {
-        self.0[0] = v;
-        self
-    }
-    pub fn nth1(mut self, v: Number) -> Self {
-        self.0[1] = v;
-        self
-    }
-}
-impl molecule::prelude::Builder for MutantRangeBuilder {
-    type Entity = MutantRange;
-    const NAME: &'static str = "MutantRangeBuilder";
-    fn expected_length(&self) -> usize {
-        Self::TOTAL_SIZE
-    }
-    fn write<W: molecule::io::Write>(&self, writer: &mut W) -> molecule::io::Result<()> {
-        writer.write_all(self.0[0].as_slice())?;
-        writer.write_all(self.0[1].as_slice())?;
-        Ok(())
-    }
-    fn build(&self) -> Self::Entity {
-        let mut inner = Vec::with_capacity(self.expected_length());
-        self.write(&mut inner)
-            .unwrap_or_else(|_| panic!("{} build should be ok", Self::NAME));
-        MutantRange::new_unchecked(inner.into())
-    }
-}
-#[derive(Clone)]
 pub struct NumberVec(molecule::bytes::Bytes);
 impl ::core::fmt::LowerHex for NumberVec {
     fn fmt(&self, f: &mut ::core::fmt::Formatter) -> ::core::fmt::Result {
@@ -1460,278 +1287,6 @@ impl<'t: 'r, 'r> ::core::iter::Iterator for NumberVecReaderIterator<'t, 'r> {
     }
 }
 impl<'t: 'r, 'r> ::core::iter::ExactSizeIterator for NumberVecReaderIterator<'t, 'r> {
-    fn len(&self) -> usize {
-        self.2 - self.1
-    }
-}
-#[derive(Clone)]
-pub struct MutantVec(molecule::bytes::Bytes);
-impl ::core::fmt::LowerHex for MutantVec {
-    fn fmt(&self, f: &mut ::core::fmt::Formatter) -> ::core::fmt::Result {
-        use molecule::hex_string;
-        if f.alternate() {
-            write!(f, "0x")?;
-        }
-        write!(f, "{}", hex_string(self.as_slice()))
-    }
-}
-impl ::core::fmt::Debug for MutantVec {
-    fn fmt(&self, f: &mut ::core::fmt::Formatter) -> ::core::fmt::Result {
-        write!(f, "{}({:#x})", Self::NAME, self)
-    }
-}
-impl ::core::fmt::Display for MutantVec {
-    fn fmt(&self, f: &mut ::core::fmt::Formatter) -> ::core::fmt::Result {
-        write!(f, "{} [", Self::NAME)?;
-        for i in 0..self.len() {
-            if i == 0 {
-                write!(f, "{}", self.get_unchecked(i))?;
-            } else {
-                write!(f, ", {}", self.get_unchecked(i))?;
-            }
-        }
-        write!(f, "]")
-    }
-}
-impl ::core::default::Default for MutantVec {
-    fn default() -> Self {
-        let v = molecule::bytes::Bytes::from_static(&Self::DEFAULT_VALUE);
-        MutantVec::new_unchecked(v)
-    }
-}
-impl MutantVec {
-    const DEFAULT_VALUE: [u8; 4] = [0, 0, 0, 0];
-    pub const ITEM_SIZE: usize = 8;
-    pub fn total_size(&self) -> usize {
-        molecule::NUMBER_SIZE + Self::ITEM_SIZE * self.item_count()
-    }
-    pub fn item_count(&self) -> usize {
-        molecule::unpack_number(self.as_slice()) as usize
-    }
-    pub fn len(&self) -> usize {
-        self.item_count()
-    }
-    pub fn is_empty(&self) -> bool {
-        self.len() == 0
-    }
-    pub fn get(&self, idx: usize) -> Option<Number> {
-        if idx >= self.len() {
-            None
-        } else {
-            Some(self.get_unchecked(idx))
-        }
-    }
-    pub fn get_unchecked(&self, idx: usize) -> Number {
-        let start = molecule::NUMBER_SIZE + Self::ITEM_SIZE * idx;
-        let end = start + Self::ITEM_SIZE;
-        Number::new_unchecked(self.0.slice(start..end))
-    }
-    pub fn as_reader<'r>(&'r self) -> MutantVecReader<'r> {
-        MutantVecReader::new_unchecked(self.as_slice())
-    }
-}
-impl molecule::prelude::Entity for MutantVec {
-    type Builder = MutantVecBuilder;
-    const NAME: &'static str = "MutantVec";
-    fn new_unchecked(data: molecule::bytes::Bytes) -> Self {
-        MutantVec(data)
-    }
-    fn as_bytes(&self) -> molecule::bytes::Bytes {
-        self.0.clone()
-    }
-    fn as_slice(&self) -> &[u8] {
-        &self.0[..]
-    }
-    fn from_slice(slice: &[u8]) -> molecule::error::VerificationResult<Self> {
-        MutantVecReader::from_slice(slice).map(|reader| reader.to_entity())
-    }
-    fn from_compatible_slice(slice: &[u8]) -> molecule::error::VerificationResult<Self> {
-        MutantVecReader::from_compatible_slice(slice).map(|reader| reader.to_entity())
-    }
-    fn new_builder() -> Self::Builder {
-        ::core::default::Default::default()
-    }
-    fn as_builder(self) -> Self::Builder {
-        Self::new_builder().extend(self.into_iter())
-    }
-}
-#[derive(Clone, Copy)]
-pub struct MutantVecReader<'r>(&'r [u8]);
-impl<'r> ::core::fmt::LowerHex for MutantVecReader<'r> {
-    fn fmt(&self, f: &mut ::core::fmt::Formatter) -> ::core::fmt::Result {
-        use molecule::hex_string;
-        if f.alternate() {
-            write!(f, "0x")?;
-        }
-        write!(f, "{}", hex_string(self.as_slice()))
-    }
-}
-impl<'r> ::core::fmt::Debug for MutantVecReader<'r> {
-    fn fmt(&self, f: &mut ::core::fmt::Formatter) -> ::core::fmt::Result {
-        write!(f, "{}({:#x})", Self::NAME, self)
-    }
-}
-impl<'r> ::core::fmt::Display for MutantVecReader<'r> {
-    fn fmt(&self, f: &mut ::core::fmt::Formatter) -> ::core::fmt::Result {
-        write!(f, "{} [", Self::NAME)?;
-        for i in 0..self.len() {
-            if i == 0 {
-                write!(f, "{}", self.get_unchecked(i))?;
-            } else {
-                write!(f, ", {}", self.get_unchecked(i))?;
-            }
-        }
-        write!(f, "]")
-    }
-}
-impl<'r> MutantVecReader<'r> {
-    pub const ITEM_SIZE: usize = 8;
-    pub fn total_size(&self) -> usize {
-        molecule::NUMBER_SIZE + Self::ITEM_SIZE * self.item_count()
-    }
-    pub fn item_count(&self) -> usize {
-        molecule::unpack_number(self.as_slice()) as usize
-    }
-    pub fn len(&self) -> usize {
-        self.item_count()
-    }
-    pub fn is_empty(&self) -> bool {
-        self.len() == 0
-    }
-    pub fn get(&self, idx: usize) -> Option<NumberReader<'r>> {
-        if idx >= self.len() {
-            None
-        } else {
-            Some(self.get_unchecked(idx))
-        }
-    }
-    pub fn get_unchecked(&self, idx: usize) -> NumberReader<'r> {
-        let start = molecule::NUMBER_SIZE + Self::ITEM_SIZE * idx;
-        let end = start + Self::ITEM_SIZE;
-        NumberReader::new_unchecked(&self.as_slice()[start..end])
-    }
-}
-impl<'r> molecule::prelude::Reader<'r> for MutantVecReader<'r> {
-    type Entity = MutantVec;
-    const NAME: &'static str = "MutantVecReader";
-    fn to_entity(&self) -> Self::Entity {
-        Self::Entity::new_unchecked(self.as_slice().to_owned().into())
-    }
-    fn new_unchecked(slice: &'r [u8]) -> Self {
-        MutantVecReader(slice)
-    }
-    fn as_slice(&self) -> &'r [u8] {
-        self.0
-    }
-    fn verify(slice: &[u8], _compatible: bool) -> molecule::error::VerificationResult<()> {
-        use molecule::verification_error as ve;
-        let slice_len = slice.len();
-        if slice_len < molecule::NUMBER_SIZE {
-            return ve!(Self, HeaderIsBroken, molecule::NUMBER_SIZE, slice_len);
-        }
-        let item_count = molecule::unpack_number(slice) as usize;
-        if item_count == 0 {
-            if slice_len != molecule::NUMBER_SIZE {
-                return ve!(Self, TotalSizeNotMatch, molecule::NUMBER_SIZE, slice_len);
-            }
-            return Ok(());
-        }
-        let total_size = molecule::NUMBER_SIZE + Self::ITEM_SIZE * item_count;
-        if slice_len != total_size {
-            return ve!(Self, TotalSizeNotMatch, total_size, slice_len);
-        }
-        Ok(())
-    }
-}
-#[derive(Clone, Debug, Default)]
-pub struct MutantVecBuilder(pub(crate) Vec<Number>);
-impl MutantVecBuilder {
-    pub const ITEM_SIZE: usize = 8;
-    pub fn set(mut self, v: Vec<Number>) -> Self {
-        self.0 = v;
-        self
-    }
-    pub fn push(mut self, v: Number) -> Self {
-        self.0.push(v);
-        self
-    }
-    pub fn extend<T: ::core::iter::IntoIterator<Item = Number>>(mut self, iter: T) -> Self {
-        for elem in iter {
-            self.0.push(elem);
-        }
-        self
-    }
-    pub fn replace(&mut self, index: usize, v: Number) -> Option<Number> {
-        self.0
-            .get_mut(index)
-            .map(|item| ::core::mem::replace(item, v))
-    }
-}
-impl molecule::prelude::Builder for MutantVecBuilder {
-    type Entity = MutantVec;
-    const NAME: &'static str = "MutantVecBuilder";
-    fn expected_length(&self) -> usize {
-        molecule::NUMBER_SIZE + Self::ITEM_SIZE * self.0.len()
-    }
-    fn write<W: molecule::io::Write>(&self, writer: &mut W) -> molecule::io::Result<()> {
-        writer.write_all(&molecule::pack_number(self.0.len() as molecule::Number))?;
-        for inner in &self.0[..] {
-            writer.write_all(inner.as_slice())?;
-        }
-        Ok(())
-    }
-    fn build(&self) -> Self::Entity {
-        let mut inner = Vec::with_capacity(self.expected_length());
-        self.write(&mut inner)
-            .unwrap_or_else(|_| panic!("{} build should be ok", Self::NAME));
-        MutantVec::new_unchecked(inner.into())
-    }
-}
-pub struct MutantVecIterator(MutantVec, usize, usize);
-impl ::core::iter::Iterator for MutantVecIterator {
-    type Item = Number;
-    fn next(&mut self) -> Option<Self::Item> {
-        if self.1 >= self.2 {
-            None
-        } else {
-            let ret = self.0.get_unchecked(self.1);
-            self.1 += 1;
-            Some(ret)
-        }
-    }
-}
-impl ::core::iter::ExactSizeIterator for MutantVecIterator {
-    fn len(&self) -> usize {
-        self.2 - self.1
-    }
-}
-impl ::core::iter::IntoIterator for MutantVec {
-    type Item = Number;
-    type IntoIter = MutantVecIterator;
-    fn into_iter(self) -> Self::IntoIter {
-        let len = self.len();
-        MutantVecIterator(self, 0, len)
-    }
-}
-impl<'r> MutantVecReader<'r> {
-    pub fn iter<'t>(&'t self) -> MutantVecReaderIterator<'t, 'r> {
-        MutantVecReaderIterator(&self, 0, self.len())
-    }
-}
-pub struct MutantVecReaderIterator<'t, 'r>(&'t MutantVecReader<'r>, usize, usize);
-impl<'t: 'r, 'r> ::core::iter::Iterator for MutantVecReaderIterator<'t, 'r> {
-    type Item = NumberReader<'t>;
-    fn next(&mut self) -> Option<Self::Item> {
-        if self.1 >= self.2 {
-            None
-        } else {
-            let ret = self.0.get_unchecked(self.1);
-            self.1 += 1;
-            Some(ret)
-        }
-    }
-}
-impl<'t: 'r, 'r> ::core::iter::ExactSizeIterator for MutantVecReaderIterator<'t, 'r> {
     fn len(&self) -> usize {
         self.2 - self.1
     }
@@ -2292,7 +1847,7 @@ impl ::core::default::Default for TraitPool {
 }
 impl TraitPool {
     const DEFAULT_VALUE: [u8; 8] = [0, 0, 0, 0, 4, 0, 0, 0];
-    pub const ITEMS_COUNT: usize = 7;
+    pub const ITEMS_COUNT: usize = 5;
     pub fn item_id(&self) -> molecule::Number {
         molecule::unpack_number(self.as_slice())
     }
@@ -2302,10 +1857,8 @@ impl TraitPool {
             0 => StringVec::new_unchecked(inner).into(),
             1 => NumberVec::new_unchecked(inner).into(),
             2 => FloatVec::new_unchecked(inner).into(),
-            3 => MutantVec::new_unchecked(inner).into(),
-            4 => NumberRange::new_unchecked(inner).into(),
-            5 => FloatRange::new_unchecked(inner).into(),
-            6 => MutantRange::new_unchecked(inner).into(),
+            3 => NumberRange::new_unchecked(inner).into(),
+            4 => FloatRange::new_unchecked(inner).into(),
             _ => panic!("{}: invalid data", Self::NAME),
         }
     }
@@ -2362,7 +1915,7 @@ impl<'r> ::core::fmt::Display for TraitPoolReader<'r> {
     }
 }
 impl<'r> TraitPoolReader<'r> {
-    pub const ITEMS_COUNT: usize = 7;
+    pub const ITEMS_COUNT: usize = 5;
     pub fn item_id(&self) -> molecule::Number {
         molecule::unpack_number(self.as_slice())
     }
@@ -2372,10 +1925,8 @@ impl<'r> TraitPoolReader<'r> {
             0 => StringVecReader::new_unchecked(inner).into(),
             1 => NumberVecReader::new_unchecked(inner).into(),
             2 => FloatVecReader::new_unchecked(inner).into(),
-            3 => MutantVecReader::new_unchecked(inner).into(),
-            4 => NumberRangeReader::new_unchecked(inner).into(),
-            5 => FloatRangeReader::new_unchecked(inner).into(),
-            6 => MutantRangeReader::new_unchecked(inner).into(),
+            3 => NumberRangeReader::new_unchecked(inner).into(),
+            4 => FloatRangeReader::new_unchecked(inner).into(),
             _ => panic!("{}: invalid data", Self::NAME),
         }
     }
@@ -2404,10 +1955,8 @@ impl<'r> molecule::prelude::Reader<'r> for TraitPoolReader<'r> {
             0 => StringVecReader::verify(inner_slice, compatible),
             1 => NumberVecReader::verify(inner_slice, compatible),
             2 => FloatVecReader::verify(inner_slice, compatible),
-            3 => MutantVecReader::verify(inner_slice, compatible),
-            4 => NumberRangeReader::verify(inner_slice, compatible),
-            5 => FloatRangeReader::verify(inner_slice, compatible),
-            6 => MutantRangeReader::verify(inner_slice, compatible),
+            3 => NumberRangeReader::verify(inner_slice, compatible),
+            4 => FloatRangeReader::verify(inner_slice, compatible),
             _ => ve!(Self, UnknownItem, Self::ITEMS_COUNT, item_id),
         }?;
         Ok(())
@@ -2416,7 +1965,7 @@ impl<'r> molecule::prelude::Reader<'r> for TraitPoolReader<'r> {
 #[derive(Clone, Debug, Default)]
 pub struct TraitPoolBuilder(pub(crate) TraitPoolUnion);
 impl TraitPoolBuilder {
-    pub const ITEMS_COUNT: usize = 7;
+    pub const ITEMS_COUNT: usize = 5;
     pub fn set<I>(mut self, v: I) -> Self
     where
         I: ::core::convert::Into<TraitPoolUnion>,
@@ -2447,20 +1996,16 @@ pub enum TraitPoolUnion {
     StringVec(StringVec),
     NumberVec(NumberVec),
     FloatVec(FloatVec),
-    MutantVec(MutantVec),
     NumberRange(NumberRange),
     FloatRange(FloatRange),
-    MutantRange(MutantRange),
 }
 #[derive(Debug, Clone, Copy)]
 pub enum TraitPoolUnionReader<'r> {
     StringVec(StringVecReader<'r>),
     NumberVec(NumberVecReader<'r>),
     FloatVec(FloatVecReader<'r>),
-    MutantVec(MutantVecReader<'r>),
     NumberRange(NumberRangeReader<'r>),
     FloatRange(FloatRangeReader<'r>),
-    MutantRange(MutantRangeReader<'r>),
 }
 impl ::core::default::Default for TraitPoolUnion {
     fn default() -> Self {
@@ -2479,17 +2024,11 @@ impl ::core::fmt::Display for TraitPoolUnion {
             TraitPoolUnion::FloatVec(ref item) => {
                 write!(f, "{}::{}({})", Self::NAME, FloatVec::NAME, item)
             }
-            TraitPoolUnion::MutantVec(ref item) => {
-                write!(f, "{}::{}({})", Self::NAME, MutantVec::NAME, item)
-            }
             TraitPoolUnion::NumberRange(ref item) => {
                 write!(f, "{}::{}({})", Self::NAME, NumberRange::NAME, item)
             }
             TraitPoolUnion::FloatRange(ref item) => {
                 write!(f, "{}::{}({})", Self::NAME, FloatRange::NAME, item)
-            }
-            TraitPoolUnion::MutantRange(ref item) => {
-                write!(f, "{}::{}({})", Self::NAME, MutantRange::NAME, item)
             }
         }
     }
@@ -2506,17 +2045,11 @@ impl<'r> ::core::fmt::Display for TraitPoolUnionReader<'r> {
             TraitPoolUnionReader::FloatVec(ref item) => {
                 write!(f, "{}::{}({})", Self::NAME, FloatVec::NAME, item)
             }
-            TraitPoolUnionReader::MutantVec(ref item) => {
-                write!(f, "{}::{}({})", Self::NAME, MutantVec::NAME, item)
-            }
             TraitPoolUnionReader::NumberRange(ref item) => {
                 write!(f, "{}::{}({})", Self::NAME, NumberRange::NAME, item)
             }
             TraitPoolUnionReader::FloatRange(ref item) => {
                 write!(f, "{}::{}({})", Self::NAME, FloatRange::NAME, item)
-            }
-            TraitPoolUnionReader::MutantRange(ref item) => {
-                write!(f, "{}::{}({})", Self::NAME, MutantRange::NAME, item)
             }
         }
     }
@@ -2527,10 +2060,8 @@ impl TraitPoolUnion {
             TraitPoolUnion::StringVec(ref item) => write!(f, "{}", item),
             TraitPoolUnion::NumberVec(ref item) => write!(f, "{}", item),
             TraitPoolUnion::FloatVec(ref item) => write!(f, "{}", item),
-            TraitPoolUnion::MutantVec(ref item) => write!(f, "{}", item),
             TraitPoolUnion::NumberRange(ref item) => write!(f, "{}", item),
             TraitPoolUnion::FloatRange(ref item) => write!(f, "{}", item),
-            TraitPoolUnion::MutantRange(ref item) => write!(f, "{}", item),
         }
     }
 }
@@ -2540,10 +2071,8 @@ impl<'r> TraitPoolUnionReader<'r> {
             TraitPoolUnionReader::StringVec(ref item) => write!(f, "{}", item),
             TraitPoolUnionReader::NumberVec(ref item) => write!(f, "{}", item),
             TraitPoolUnionReader::FloatVec(ref item) => write!(f, "{}", item),
-            TraitPoolUnionReader::MutantVec(ref item) => write!(f, "{}", item),
             TraitPoolUnionReader::NumberRange(ref item) => write!(f, "{}", item),
             TraitPoolUnionReader::FloatRange(ref item) => write!(f, "{}", item),
-            TraitPoolUnionReader::MutantRange(ref item) => write!(f, "{}", item),
         }
     }
 }
@@ -2562,11 +2091,6 @@ impl ::core::convert::From<FloatVec> for TraitPoolUnion {
         TraitPoolUnion::FloatVec(item)
     }
 }
-impl ::core::convert::From<MutantVec> for TraitPoolUnion {
-    fn from(item: MutantVec) -> Self {
-        TraitPoolUnion::MutantVec(item)
-    }
-}
 impl ::core::convert::From<NumberRange> for TraitPoolUnion {
     fn from(item: NumberRange) -> Self {
         TraitPoolUnion::NumberRange(item)
@@ -2575,11 +2099,6 @@ impl ::core::convert::From<NumberRange> for TraitPoolUnion {
 impl ::core::convert::From<FloatRange> for TraitPoolUnion {
     fn from(item: FloatRange) -> Self {
         TraitPoolUnion::FloatRange(item)
-    }
-}
-impl ::core::convert::From<MutantRange> for TraitPoolUnion {
-    fn from(item: MutantRange) -> Self {
-        TraitPoolUnion::MutantRange(item)
     }
 }
 impl<'r> ::core::convert::From<StringVecReader<'r>> for TraitPoolUnionReader<'r> {
@@ -2597,11 +2116,6 @@ impl<'r> ::core::convert::From<FloatVecReader<'r>> for TraitPoolUnionReader<'r> 
         TraitPoolUnionReader::FloatVec(item)
     }
 }
-impl<'r> ::core::convert::From<MutantVecReader<'r>> for TraitPoolUnionReader<'r> {
-    fn from(item: MutantVecReader<'r>) -> Self {
-        TraitPoolUnionReader::MutantVec(item)
-    }
-}
 impl<'r> ::core::convert::From<NumberRangeReader<'r>> for TraitPoolUnionReader<'r> {
     fn from(item: NumberRangeReader<'r>) -> Self {
         TraitPoolUnionReader::NumberRange(item)
@@ -2612,11 +2126,6 @@ impl<'r> ::core::convert::From<FloatRangeReader<'r>> for TraitPoolUnionReader<'r
         TraitPoolUnionReader::FloatRange(item)
     }
 }
-impl<'r> ::core::convert::From<MutantRangeReader<'r>> for TraitPoolUnionReader<'r> {
-    fn from(item: MutantRangeReader<'r>) -> Self {
-        TraitPoolUnionReader::MutantRange(item)
-    }
-}
 impl TraitPoolUnion {
     pub const NAME: &'static str = "TraitPoolUnion";
     pub fn as_bytes(&self) -> molecule::bytes::Bytes {
@@ -2624,10 +2133,8 @@ impl TraitPoolUnion {
             TraitPoolUnion::StringVec(item) => item.as_bytes(),
             TraitPoolUnion::NumberVec(item) => item.as_bytes(),
             TraitPoolUnion::FloatVec(item) => item.as_bytes(),
-            TraitPoolUnion::MutantVec(item) => item.as_bytes(),
             TraitPoolUnion::NumberRange(item) => item.as_bytes(),
             TraitPoolUnion::FloatRange(item) => item.as_bytes(),
-            TraitPoolUnion::MutantRange(item) => item.as_bytes(),
         }
     }
     pub fn as_slice(&self) -> &[u8] {
@@ -2635,10 +2142,8 @@ impl TraitPoolUnion {
             TraitPoolUnion::StringVec(item) => item.as_slice(),
             TraitPoolUnion::NumberVec(item) => item.as_slice(),
             TraitPoolUnion::FloatVec(item) => item.as_slice(),
-            TraitPoolUnion::MutantVec(item) => item.as_slice(),
             TraitPoolUnion::NumberRange(item) => item.as_slice(),
             TraitPoolUnion::FloatRange(item) => item.as_slice(),
-            TraitPoolUnion::MutantRange(item) => item.as_slice(),
         }
     }
     pub fn item_id(&self) -> molecule::Number {
@@ -2646,10 +2151,8 @@ impl TraitPoolUnion {
             TraitPoolUnion::StringVec(_) => 0,
             TraitPoolUnion::NumberVec(_) => 1,
             TraitPoolUnion::FloatVec(_) => 2,
-            TraitPoolUnion::MutantVec(_) => 3,
-            TraitPoolUnion::NumberRange(_) => 4,
-            TraitPoolUnion::FloatRange(_) => 5,
-            TraitPoolUnion::MutantRange(_) => 6,
+            TraitPoolUnion::NumberRange(_) => 3,
+            TraitPoolUnion::FloatRange(_) => 4,
         }
     }
     pub fn item_name(&self) -> &str {
@@ -2657,10 +2160,8 @@ impl TraitPoolUnion {
             TraitPoolUnion::StringVec(_) => "StringVec",
             TraitPoolUnion::NumberVec(_) => "NumberVec",
             TraitPoolUnion::FloatVec(_) => "FloatVec",
-            TraitPoolUnion::MutantVec(_) => "MutantVec",
             TraitPoolUnion::NumberRange(_) => "NumberRange",
             TraitPoolUnion::FloatRange(_) => "FloatRange",
-            TraitPoolUnion::MutantRange(_) => "MutantRange",
         }
     }
     pub fn as_reader<'r>(&'r self) -> TraitPoolUnionReader<'r> {
@@ -2668,10 +2169,8 @@ impl TraitPoolUnion {
             TraitPoolUnion::StringVec(item) => item.as_reader().into(),
             TraitPoolUnion::NumberVec(item) => item.as_reader().into(),
             TraitPoolUnion::FloatVec(item) => item.as_reader().into(),
-            TraitPoolUnion::MutantVec(item) => item.as_reader().into(),
             TraitPoolUnion::NumberRange(item) => item.as_reader().into(),
             TraitPoolUnion::FloatRange(item) => item.as_reader().into(),
-            TraitPoolUnion::MutantRange(item) => item.as_reader().into(),
         }
     }
 }
@@ -2682,10 +2181,8 @@ impl<'r> TraitPoolUnionReader<'r> {
             TraitPoolUnionReader::StringVec(item) => item.as_slice(),
             TraitPoolUnionReader::NumberVec(item) => item.as_slice(),
             TraitPoolUnionReader::FloatVec(item) => item.as_slice(),
-            TraitPoolUnionReader::MutantVec(item) => item.as_slice(),
             TraitPoolUnionReader::NumberRange(item) => item.as_slice(),
             TraitPoolUnionReader::FloatRange(item) => item.as_slice(),
-            TraitPoolUnionReader::MutantRange(item) => item.as_slice(),
         }
     }
     pub fn item_id(&self) -> molecule::Number {
@@ -2693,10 +2190,8 @@ impl<'r> TraitPoolUnionReader<'r> {
             TraitPoolUnionReader::StringVec(_) => 0,
             TraitPoolUnionReader::NumberVec(_) => 1,
             TraitPoolUnionReader::FloatVec(_) => 2,
-            TraitPoolUnionReader::MutantVec(_) => 3,
-            TraitPoolUnionReader::NumberRange(_) => 4,
-            TraitPoolUnionReader::FloatRange(_) => 5,
-            TraitPoolUnionReader::MutantRange(_) => 6,
+            TraitPoolUnionReader::NumberRange(_) => 3,
+            TraitPoolUnionReader::FloatRange(_) => 4,
         }
     }
     pub fn item_name(&self) -> &str {
@@ -2704,10 +2199,8 @@ impl<'r> TraitPoolUnionReader<'r> {
             TraitPoolUnionReader::StringVec(_) => "StringVec",
             TraitPoolUnionReader::NumberVec(_) => "NumberVec",
             TraitPoolUnionReader::FloatVec(_) => "FloatVec",
-            TraitPoolUnionReader::MutantVec(_) => "MutantVec",
             TraitPoolUnionReader::NumberRange(_) => "NumberRange",
             TraitPoolUnionReader::FloatRange(_) => "FloatRange",
-            TraitPoolUnionReader::MutantRange(_) => "MutantRange",
         }
     }
 }

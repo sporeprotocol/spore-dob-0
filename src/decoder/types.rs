@@ -7,7 +7,6 @@ use crate::schema::dob_721::TraitsBase;
 pub enum Error {
     ParseInvalidArgCount = 1,
     ParseInvalidSporeDNA,
-    ParseInvalidBlockNumber,
     ParseInvalidTraitsBase,
 
     DecodeInsufficientSporeDNA,
@@ -15,10 +14,8 @@ pub enum Error {
     DecodeEmptyStringVecTrait,
     DecodeEmptyNumberVecTrait,
     DecodeEmptyFloatVecTrait,
-    DecodeEmptyMutantVecTrait,
     DecodeInvalidNumberRangeTrait,
     DecodeInvalidFloatRangeTrait,
-    DecodeInvalidMutantRangeTrait,
 }
 
 #[derive(serde::Serialize)]
@@ -36,6 +33,5 @@ pub struct ParsedDNA {
 
 pub struct Parameters {
     pub spore_dna: Vec<u8>,
-    pub block_number: u64,
     pub traits_base: TraitsBase,
 }

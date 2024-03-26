@@ -3,9 +3,7 @@ vector StringVec <String>;
 
 array Number [byte; 8];
 array NumberRange [Number; 2];
-array MutantRange [Number; 2];
 vector NumberVec <Number>;
-vector MutantVec <Number>;
 
 table FloatVec {
 	numerator_vec: NumberVec,
@@ -21,10 +19,8 @@ union TraitPool {
 	StringVec,
 	NumberVec,
 	FloatVec,
-	MutantVec,
 	NumberRange,
     FloatRange,
-	MutantRange,
 }
 
 option TraitPoolOpt (TraitPool);

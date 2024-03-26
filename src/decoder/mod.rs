@@ -1,8 +1,5 @@
-use alloc::string::String;
 use alloc::vec::Vec;
 use molecule::prelude::Entity;
-use rand::rngs::SmallRng;
-use rand::{RngCore, SeedableRng};
 
 use crate::schema::dob_721::{TraitPoolUnion, TraitsBase};
 
@@ -14,7 +11,7 @@ use types::{Error, Parameters, ParsedDNA, ParsedTrait};
 // argv[2] = 1250945 (block number while minting)
 // argv[3] = d48869363ff41a103b131a29f43...d7be6eeaf513c2c3ae056b9b8c2e1 (traits config in Cluster)
 pub fn dobs_parse_parameters(args: Vec<&[u8]>) -> Result<Parameters, Error> {
-    if args.len() != 3 {
+    if args.len() != 2 {
         return Err(Error::ParseInvalidArgCount);
     }
 
@@ -24,10 +21,6 @@ pub fn dobs_parse_parameters(args: Vec<&[u8]>) -> Result<Parameters, Error> {
             return Err(Error::ParseInvalidSporeDNA);
         }
         hex::decode(&value).map_err(|_| Error::ParseInvalidSporeDNA)?
-    };
-    let block_number = {
-        let value = String::from_utf8_lossy(args[1]);
-        u64::from_str_radix(&value, 10).map_err(|_| Error::ParseInvalidBlockNumber)?
     };
     let traits_base = {
         let value = args[2];
@@ -39,7 +32,6 @@ pub fn dobs_parse_parameters(args: Vec<&[u8]>) -> Result<Parameters, Error> {
     };
     Ok(Parameters {
         spore_dna,
-        block_number,
         traits_base,
     })
 }
@@ -47,11 +39,9 @@ pub fn dobs_parse_parameters(args: Vec<&[u8]>) -> Result<Parameters, Error> {
 pub fn dobs_decode(parameters: Parameters) -> Result<Vec<u8>, Error> {
     let Parameters {
         mut spore_dna,
-        block_number,
         traits_base,
     } = parameters;
 
-    let mut rng = SmallRng::seed_from_u64(block_number);
     let mut result = Vec::new();
     for schema_base in traits_base.into_iter() {
         let mut parsed_dna = ParsedDNA::default();
@@ -104,14 +94,6 @@ pub fn dobs_decode(parameters: Parameters) -> Result<Vec<u8>, Error> {
                         .traits
                         .push(ParsedTrait::Float(numerator as f64 / denominator as f64));
                 }
-                TraitPoolUnion::MutantVec(mutant_numbers) => {
-                    if mutant_numbers.is_empty() {
-                        return Err(Error::DecodeEmptyMutantVecTrait);
-                    }
-                    let offset = (offset + rng.next_u64()) as usize % mutant_numbers.len();
-                    let value = mutant_numbers.get_unchecked(offset);
-                    parsed_dna.traits.push(ParsedTrait::Number(value.into()));
-                }
                 TraitPoolUnion::NumberRange(number_range) => {
                     let upperbound: u64 = number_range.nth1().into();
                     let lowerbound: u64 = number_range.nth0().into();
@@ -135,17 +117,6 @@ pub fn dobs_decode(parameters: Parameters) -> Result<Vec<u8>, Error> {
                     parsed_dna
                         .traits
                         .push(ParsedTrait::Float(numerator as f64 / denominator as f64));
-                }
-                TraitPoolUnion::MutantRange(mutant_number_range) => {
-                    let upperbound: u64 = mutant_number_range.nth1().into();
-                    let lowerbound: u64 = mutant_number_range.nth0().into();
-                    if upperbound < lowerbound {
-                        return Err(Error::DecodeInvalidMutantRangeTrait);
-                    }
-                    let offset = (offset + rng.next_u64()) % (upperbound - lowerbound);
-                    parsed_dna
-                        .traits
-                        .push(ParsedTrait::Number(lowerbound + offset));
                 }
             }
         }

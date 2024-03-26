@@ -62,14 +62,6 @@ mod type_casting {
         }
     }
 
-    impl From<Vec<u64>> for dob_721::MutantVec {
-        fn from(value: Vec<u64>) -> Self {
-            Self::new_builder()
-                .set(value.into_iter().map(Into::into).collect())
-                .build()
-        }
-    }
-
     impl From<(Vec<u64>, u64)> for dob_721::FloatVec {
         fn from(value: (Vec<u64>, u64)) -> Self {
             Self::new_builder()
@@ -80,14 +72,6 @@ mod type_casting {
     }
 
     impl From<(u64, u64)> for dob_721::NumberRange {
-        fn from(value: (u64, u64)) -> Self {
-            Self::new_builder()
-                .set([value.0.into(), value.1.into()])
-                .build()
-        }
-    }
-
-    impl From<(u64, u64)> for dob_721::MutantRange {
         fn from(value: (u64, u64)) -> Self {
             Self::new_builder()
                 .set([value.0.into(), value.1.into()])

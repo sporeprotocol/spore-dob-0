@@ -11,10 +11,7 @@ DOB721 protocol requires DOB artist to pre-define a collection DNA traits pool, 
 // DNA bytes in Spore 
 {
     contentType: "dob/721",
-    content: {
-        block_number: 1250945,
-        dna: "0xefc2866a311da5b6dfcdfc4e3c22d00d024a53217ebc33855eeab1068990ed9d"
-    },
+    content: "0xefc2866a311da5b6dfcdfc4e3c22d00d024a53217ebc33855eeab1068990ed9d",
     content_id: "0x3b0e340b6c77d7b6e4f1fb2946d526ba65bfd196a27d9a7e5b6f06b82af5d07e"
 }
 
@@ -35,7 +32,7 @@ DOB721 protocol requires DOB artist to pre-define a collection DNA traits pool, 
 }
 ```
 
-`dna: "0xefc2866a311da5b6dfcdfc4e3c22d00d024a53217ebc33855eeab1068990ed9d"` is the DNA bytes, which DOB721 decoder will parse one by one. `pattern: "0xd48869363ff41a103b131a29f43...d7be6eeaf513c2c3ae056b9b8c2e1"` is the pattern created by Cluster artist, which will be also parsed in DOB721 decoder in the meantime. In addition, the pattern is a hexed string of [TraitsBase](https://github.com/sporeprotocol/spore-dob-721/blob/master/src/schema/dob_721.mol#L43) bytes.
+`0xefc2866a311da5b6dfcdfc4e3c22d00d024a53217ebc33855eeab1068990ed9d` is the DNA bytes, which DOB721 decoder will parse one by one. `pattern: "0xd48869363ff41a103b131a29f43...d7be6eeaf513c2c3ae056b9b8c2e1"` is the pattern created by Cluster artist, which will be also parsed in DOB721 decoder in the meantime. In addition, the pattern is a hexed string of [TraitsBase](https://github.com/sporeprotocol/spore-dob-721/blob/master/src/schema/dob_721.mol#L43) bytes.
 
 For real-world use case, this DOB721 decoder program is referenced by [decoder-template-rust](https://github.com/sporeprotocol/decoder-template-rust) and compiled into RISC-V binary. Then, we have two different methods to put it on-chain:
 1. record the hash of binary on-chain
