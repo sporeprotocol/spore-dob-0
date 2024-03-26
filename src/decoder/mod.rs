@@ -23,7 +23,7 @@ pub fn dobs_parse_parameters(args: Vec<&[u8]>) -> Result<Parameters, Error> {
         hex::decode(&value).map_err(|_| Error::ParseInvalidSporeDNA)?
     };
     let traits_base = {
-        let value = args[2];
+        let value = args[1];
         if value.len() % 2 != 0 {
             return Err(Error::ParseInvalidSporeDNA);
         }
