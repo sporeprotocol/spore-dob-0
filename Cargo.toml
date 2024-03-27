@@ -11,3 +11,7 @@ rand = { version = "0.8.5", default-features = false, features = ["small_rng"] }
 molecule = { version = "0.7.5", default-features = false }
 serde_json = { version = "1.0", default-features = false, features = ["alloc"] }
 serde = { version = "1.0", default-features = false, features = ["serde_derive"] }
+
+[dev-dependencies]
+ckb-hash = "0.114"
+ckb-types = "0.114"

@@ -11,7 +11,11 @@ DOB721 protocol requires DOB artist to pre-define a collection DNA traits pool, 
 // DNA bytes in Spore 
 {
     contentType: "dob/721",
-    content: "0xefc2866a311da5b6dfcdfc4e3c22d00d024a53217ebc33855eeab1068990ed9d",
+    content: {
+        block_number: 12559090,
+        cell_id: 8902282834237953893,
+        dna: "0xefc2866a311da5b6dfcdfc4e3c22d00d024a53217ebc33855eeab1068990ed9d"
+    },
     content_id: "0x3b0e340b6c77d7b6e4f1fb2946d526ba65bfd196a27d9a7e5b6f06b82af5d07e"
 }
 
