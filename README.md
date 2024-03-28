@@ -26,8 +26,9 @@ DOB721 protocol requires DOB artist to pre-define a collection DNA traits pool, 
         description: "Unicorn Collection",
         dobs: {
             decoder: {
+                format: "RISC-V" or "Lua" or "JS",
                 type: "code_hash" or "type_id",
-                hash: "0x4f441345deb88edb39228e46163a8f11ac7736376af8fe5e791e194038a3ec7b"
+                hash: "0x4f441345deb88edb39228e46163a8f11ac7736376af8fe5e791e194038a3ec7b",
             },
             pattern: "0xd48869363ff41a103b131a29f43...d7be6eeaf513c2c3ae056b9b8c2e1",
             dna_bytes: 32
