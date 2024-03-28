@@ -7,9 +7,8 @@ pub mod types;
 use types::{Error, Parameters, ParsedDNA, ParsedTrait};
 
 // example:
-// argv[1] = efc2866a311da5b6dfcdfc4e3c22d00d024a53217ebc33855eeab1068990ed9d (hexed DNA string in Spore)
-// argv[2] = 1250945 (block number while minting)
-// argv[3] = d48869363ff41a103b131a29f43...d7be6eeaf513c2c3ae056b9b8c2e1 (traits config in Cluster)
+// argv[0] = efc2866a311da5b6dfcdfc4e3c22d00d024a53217ebc33855eeab1068990ed9d (hexed DNA string in Spore)
+// argv[1] = d48869363ff41a103b131a29f43...d7be6eeaf513c2c3ae056b9b8c2e1 (hexed traits pattern string in Cluster)
 pub fn dobs_parse_parameters(args: Vec<&[u8]>) -> Result<Parameters, Error> {
     if args.len() != 2 {
         return Err(Error::ParseInvalidArgCount);
