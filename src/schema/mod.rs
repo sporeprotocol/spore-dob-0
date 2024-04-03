@@ -1,4 +1,4 @@
-pub mod dob_721;
+pub mod dob_0;
 
 mod type_casting {
     use alloc::{
@@ -8,21 +8,21 @@ mod type_casting {
     };
     use molecule::prelude::{Builder, Entity};
 
-    use super::dob_721;
+    use super::dob_0;
 
-    impl From<dob_721::Number> for u64 {
-        fn from(value: dob_721::Number) -> Self {
+    impl From<dob_0::Number> for u64 {
+        fn from(value: dob_0::Number) -> Self {
             Self::from_le_bytes(value.as_bytes().to_vec().try_into().unwrap())
         }
     }
 
-    impl From<dob_721::String> for String {
-        fn from(value: dob_721::String) -> Self {
+    impl From<dob_0::String> for String {
+        fn from(value: dob_0::String) -> Self {
             Self::from_utf8_lossy(&value.raw_data()).to_string()
         }
     }
 
-    impl From<String> for dob_721::String {
+    impl From<String> for dob_0::String {
         fn from(value: String) -> Self {
             Self::new_builder()
                 .set(value.as_bytes().into_iter().map(|v| (*v).into()).collect())
@@ -30,7 +30,7 @@ mod type_casting {
         }
     }
 
-    impl From<Vec<String>> for dob_721::StringVec {
+    impl From<Vec<String>> for dob_0::StringVec {
         fn from(value: Vec<String>) -> Self {
             Self::new_builder()
                 .set(value.into_iter().map(Into::into).collect())
@@ -38,7 +38,7 @@ mod type_casting {
         }
     }
 
-    impl From<Vec<&str>> for dob_721::StringVec {
+    impl From<Vec<&str>> for dob_0::StringVec {
         fn from(value: Vec<&str>) -> Self {
             Self::new_builder()
                 .set(value.into_iter().map(|v| v.to_owned().into()).collect())
@@ -46,7 +46,7 @@ mod type_casting {
         }
     }
 
-    impl From<u64> for dob_721::Number {
+    impl From<u64> for dob_0::Number {
         fn from(value: u64) -> Self {
             Self::new_builder()
                 .set(value.to_le_bytes().map(Into::into))
@@ -54,7 +54,7 @@ mod type_casting {
         }
     }
 
-    impl From<Vec<u64>> for dob_721::NumberVec {
+    impl From<Vec<u64>> for dob_0::NumberVec {
         fn from(value: Vec<u64>) -> Self {
             Self::new_builder()
                 .set(value.into_iter().map(Into::into).collect())
@@ -62,7 +62,7 @@ mod type_casting {
         }
     }
 
-    impl From<(Vec<u64>, u64)> for dob_721::FloatVec {
+    impl From<(Vec<u64>, u64)> for dob_0::FloatVec {
         fn from(value: (Vec<u64>, u64)) -> Self {
             Self::new_builder()
                 .numerator_vec(value.0.into())
@@ -71,7 +71,7 @@ mod type_casting {
         }
     }
 
-    impl From<(u64, u64)> for dob_721::NumberRange {
+    impl From<(u64, u64)> for dob_0::NumberRange {
         fn from(value: (u64, u64)) -> Self {
             Self::new_builder()
                 .set([value.0.into(), value.1.into()])
@@ -79,7 +79,7 @@ mod type_casting {
         }
     }
 
-    impl From<((u64, u64), u64)> for dob_721::FloatRange {
+    impl From<((u64, u64), u64)> for dob_0::FloatRange {
         fn from(value: ((u64, u64), u64)) -> Self {
             Self::new_builder()
                 .numerator_range(value.0.into())
@@ -88,5 +88,3 @@ mod type_casting {
         }
     }
 }
-
-pub use type_casting::*;

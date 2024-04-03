@@ -11,7 +11,7 @@ mod test {
     use molecule::prelude::{Builder, Entity};
 
     use crate::decoder::{dobs_decode, types::Parameters};
-    use crate::schema::dob_721::{
+    use crate::schema::dob_0::{
         Trait, TraitPool, TraitPoolOpt, TraitPoolUnion, TraitSchema, TraitSchemaVec, TraitsBase,
     };
 

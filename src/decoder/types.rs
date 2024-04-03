@@ -1,7 +1,7 @@
 use alloc::string::String;
 use alloc::vec::Vec;
 
-use crate::schema::dob_721::TraitsBase;
+use crate::schema::dob_0::TraitsBase;
 
 #[repr(u64)]
 pub enum Error {

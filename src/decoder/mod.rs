@@ -1,7 +1,7 @@
 use alloc::vec::Vec;
 use molecule::prelude::Entity;
 
-use crate::schema::dob_721::{TraitPoolUnion, TraitsBase};
+use crate::schema::dob_0::{TraitPoolUnion, TraitsBase};
 
 pub mod types;
 use types::{Error, Parameters, ParsedDNA, ParsedTrait};
