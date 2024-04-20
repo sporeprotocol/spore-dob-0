@@ -50,7 +50,7 @@ mod test {
     }
 
     #[test]
-    fn test_dna_decode() {
+    fn test_dna_decode_unicorn() {
         let horn_vec = trait_schema!(
             1,
             StringVec,
@@ -121,18 +121,18 @@ mod test {
             hash.finalize(&mut cell_id);
             u64::from_le_bytes(cell_id)
         };
-        let spore_dna = {
+        let unicorn_dna = {
             let mut hash = Blake2bBuilder::new(12)
                 .personal(CKB_HASH_PERSONALIZATION)
                 .build();
             hash.update(&block_number.to_le_bytes());
             hash.update(&cell_id.to_le_bytes());
-            let mut spore_dna = [0u8; 12];
-            hash.finalize(&mut spore_dna);
-            spore_dna.to_vec()
+            let mut dna = [0u8; 12];
+            hash.finalize(&mut dna);
+            dna.to_vec()
         };
 
-        println!("hexed_spore_dna = {}\n", hex::encode(&spore_dna));
+        println!("hexed_unicorn_dna = {}\n", hex::encode(&unicorn_dna));
         println!("block_number = {block_number}\n");
         println!("cell_id = {cell_id}\n");
         println!(
@@ -141,7 +141,74 @@ mod test {
         );
 
         let dna_traits = dobs_decode(Parameters {
-            spore_dna,
+            spore_dna: unicorn_dna,
+            traits_base,
+        })
+        .map_err(|error| format!("error code = {}", error as u64))
+        .unwrap();
+
+        println!("{}", String::from_utf8_lossy(&dna_traits));
+    }
+
+    #[test]
+    fn test_dna_decode_nervape() {
+        let prev_bg_vec = trait_schema!(
+            1,
+            StringVec,
+            vec![
+                "btcfs://1bc24351a0df2e686574cd1b6346a1f55f81cff0a2e52078a6e3ad0a35cfb833i0",
+                "btcfs://64f562d16e2a4a29e8c4821370fff473edfa22c26ef5808adb2404e39dc013e5i0",
+                "btcfs://c29fecd6d7d7eec0cb3a2b3dfdcb6aa26081db8f9851110b7c20a0f3c617299ai0",
+                "btcfs://59e87ca177ef0fd457e87e9f93627660022cf519b531e1f4e3a6dda9e5e33827i0",
+                "btcfs://a3589ddcf4b7a3c6da52fe6ae4ed3296f1ede139fe9127f2697ce0dcf2703b61i0",
+                "btcfs://799729ff6a16dd6af57db1a8ca6146d5673a30ad9a5976dd861d348a5eec28c4i0",
+                "btcfs://88dd2ab05bb8f9c72da42afc70677ac05f476e17e0f16551dc00635ae7e9546ei0",
+                "btcfs://b32e3bbb73cb877c9b411529930a5b6eb3280927b282c12486ce26901b3c2291i0",
+                "btcfs://a8b19ddab338db0c52f9a284b7d95ffeaa0de34e0b874177901eb92e0f9f9d8di0",
+                "btcfs://ba8b1bb9d8baee4bf24a06faa25b569410f2db96b4639f8e08ccbec05c88d79bi0",
+                "btcfs://aa8986f0ef667807d4b23970e64844dde3f0622542b79a5c302539de0c35b31ei0",
+                "btcfs://100f7e0f0965dc54515a3831a320881315cf5ca64ad01bed2b422616b15fd314i0",
+                "btcfs://b84ec0c770aa1961a3d9498ea8a67e1282532913fc1c13e3eaf5a48de2164fb9i0",
+                "btcfs://a06ba2e1614a5099176e5cc4d95de76cbeb4705a8bd7e142336278ebc290fdb3i0"
+            ]
+        );
+        let prev_bgcolor_vec = trait_schema!(
+            1,
+            StringVec,
+            vec![
+                "#FFE3EB", "#FFC2FE", "#CEBAF7", "#B7E6F9", "#ABF4D0", "#E0DFBD", "#F9F7A7",
+                "#E2BE91", "#F9C662", "#F7D6B2", "#FCA863", "#F9ACAC", "#E0E1E2", "#A3A7AA"
+            ]
+        );
+
+        let traits_base = TraitsBase::new_builder()
+            .push(trait_pool!("prev.bg", prev_bg_vec))
+            .push(trait_pool!("prev.bgcolor", prev_bgcolor_vec))
+            .build();
+
+        let btc_block_number = 834293u64;
+        let token_id = 1459u16;
+        let btc_receiver_address = "bc1qx9ndsrwep9j6pxc3vqralpm0a9unhhlyzy7zna";
+        let nervape_dna = {
+            let mut hash = Blake2bBuilder::new(8)
+                .personal(CKB_HASH_PERSONALIZATION)
+                .build();
+            hash.update(&btc_block_number.to_le_bytes());
+            hash.update(&token_id.to_le_bytes());
+            hash.update(btc_receiver_address.as_bytes());
+            let mut dna = [0u8; 8];
+            hash.finalize(&mut dna);
+            dna.to_vec()
+        };
+
+        println!("hexed_nervape_dna = {}\n", hex::encode(&nervape_dna));
+        println!(
+            "hexed_trats_base = {}\n",
+            hex::encode(traits_base.as_slice())
+        );
+
+        let dna_traits = dobs_decode(Parameters {
+            spore_dna: nervape_dna,
             traits_base,
         })
         .map_err(|error| format!("error code = {}", error as u64))
