@@ -39,7 +39,7 @@ mod test {
     }
 
     macro_rules! trait_pool {
-        ($name:expr $(, $pool:ident)+) => {{
+        ($name:expr $(, $pool:expr)+) => {{
             let pool = vec![$($pool,)+];
             let schema_vec = TraitSchemaVec::new_builder().set(pool).build();
             Trait::new_builder()
@@ -152,6 +152,7 @@ mod test {
 
     #[test]
     fn test_dna_decode_nervape() {
+        let prev_type_vec = trait_schema!(1, StringVec, vec!["text"]);
         let prev_bg_vec = trait_schema!(
             1,
             StringVec,
@@ -180,23 +181,38 @@ mod test {
                 "#E2BE91", "#F9C662", "#F7D6B2", "#FCA863", "#F9ACAC", "#E0E1E2", "#A3A7AA"
             ]
         );
+        let number_range = trait_schema!(1, NumberRange, (0, 255));
 
         let traits_base = TraitsBase::new_builder()
+            .push(trait_pool!("prev.type", prev_type_vec))
             .push(trait_pool!("prev.bg", prev_bg_vec))
             .push(trait_pool!("prev.bgcolor", prev_bgcolor_vec))
+            .push(trait_pool!("Background", number_range.clone()))
+            .push(trait_pool!("Suit", number_range.clone()))
+            .push(trait_pool!("Upper body", number_range.clone()))
+            .push(trait_pool!("Lower body", number_range.clone()))
+            .push(trait_pool!("Headwear", number_range.clone()))
+            .push(trait_pool!("Mask", number_range.clone()))
+            .push(trait_pool!("Eyewear", number_range.clone()))
+            .push(trait_pool!("Mouth", number_range.clone()))
+            .push(trait_pool!("Ears", number_range.clone()))
+            .push(trait_pool!("Tattoo", number_range.clone()))
+            .push(trait_pool!("Accessory", number_range.clone()))
+            .push(trait_pool!("Handheld", number_range.clone()))
+            .push(trait_pool!("Special", number_range))
             .build();
 
         let btc_block_number = 834293u64;
         let token_id = 1459u16;
         let btc_receiver_address = "bc1qx9ndsrwep9j6pxc3vqralpm0a9unhhlyzy7zna";
         let nervape_dna = {
-            let mut hash = Blake2bBuilder::new(8)
+            let mut hash = Blake2bBuilder::new(16)
                 .personal(CKB_HASH_PERSONALIZATION)
                 .build();
             hash.update(&btc_block_number.to_le_bytes());
             hash.update(&token_id.to_le_bytes());
             hash.update(btc_receiver_address.as_bytes());
-            let mut dna = [0u8; 8];
+            let mut dna = [0u8; 16];
             hash.finalize(&mut dna);
             dna.to_vec()
         };
