@@ -196,7 +196,7 @@ mod test {
 
     #[test]
     fn test_dna_decode_nervape() {
-        let prev_type_vec = trait_schema!(1, StringVec, vec!["text"]);
+        let prev_type_vec = trait_schema!(1, StringVec, vec!["image"]);
         let prev_bg_vec = trait_schema!(
             1,
             StringVec,
