@@ -51,60 +51,104 @@ mod test {
 
     #[test]
     fn test_dna_decode_unicorn() {
+        let spirits_vec = trait_schema!(
+            1,
+            StringVec,
+            vec![
+                "Wood, Blue Body",
+                "Fire, Red Body",
+                "Earth, Colorful Body",
+                "Metal, Golden Body",
+                "Water, White Body"
+            ]
+        );
+        let yin_yang_vec = trait_schema!(1, StringVec, vec!["Yang, Short Hair", "Yin, Long hair"]);
+        let talents_vec = trait_schema!(
+            1,
+            StringVec,
+            vec![
+                "Revival", "Death", "Curse", "Prophet", "Crown", "Hermit", "Attack", "Guard",
+                "Summon", "Forget"
+            ]
+        );
         let horn_vec = trait_schema!(
             1,
             StringVec,
-            vec!["Blue", "Red", "Colorful", "Gold", "White"]
+            vec![
+                "Shaman Horn",
+                "Hel Horn",
+                "Necromancer Horn",
+                "Sibyl Horn ",
+                "Caesar Horn",
+                "Lao Tsu Horn",
+                "Warrior Horn",
+                "Praetorian Horn",
+                "Bard Horn",
+                "Lethe Horn"
+            ]
         );
         let wings_vec = trait_schema!(
             1,
             StringVec,
-            vec!["Blue", "Red", "Colorful", "Gold", "White"]
+            vec![
+                "Wind Wings",
+                "Night Shadow Wings",
+                "Lightning Wings",
+                "Sun Wings",
+                "Golden Wings",
+                "Cloud Wings",
+                "Morning Glow Wings",
+                "Star Wings",
+                "Spring Wings",
+                "Moon Wings"
+            ]
         );
-        let spirit_body_vec = trait_schema!(
+        let tails_vec = trait_schema!(
             1,
             StringVec,
             vec![
-                "Blue Wood",
-                "Red Fire",
-                "Colorful Earth",
-                "Gold Metal",
-                "White Water"
+                "Meteor Tails",
+                "Rainbow Tails",
+                "Willow Tails",
+                "Phoenix Tails",
+                "Sunset Shadow Tails",
+                "Socrates Tails",
+                "Dumbledore Tails",
+                "Venus Tails",
+                "Gaia Tails"
             ]
         );
-        let tail_vec = trait_schema!(
-            1,
-            StringVec,
-            vec!["Blue", "Red", "Colorful", "Gold", "White"]
-        );
-        let hair_vec = trait_schema!(1, StringVec, vec!["Yang-Short", "Yin-Long"]);
         let horseshoes_vec = trait_schema!(
             1,
             StringVec,
-            vec!["Blue", "Red", "Colorful", "Gold", "White"]
-        );
-        let talent_vec = trait_schema!(
-            1,
-            StringVec,
             vec![
-                "Revival", "Death", "Prophet", "Curse", "Crown", "Hermit", "Guard", "Attack",
-                "Calling", "Forget"
+                "Ice Horseshoes",
+                "Dimond Horseshoes",
+                "Rock Horseshoes",
+                "Flame Horseshoes",
+                "Thunder Horseshoes",
+                "Lotus Horseshoes",
+                "Silver Horseshoes",
+                "Golden Horseshoes",
+                "Red Maple Horseshoes",
+                "Blue Lake Horseshoes",
+                "Colorful Stone Horseshoes"
             ]
         );
-        let hp_range = trait_schema!(4, NumberRange, (50000, 100000));
-        let lucky_range = trait_schema!(1, NumberRange, (1, 49));
+        let destiny_number_range = trait_schema!(4, NumberRange, (50000, 100000));
+        let lucky_number_range = trait_schema!(1, NumberRange, (1, 49));
 
         // this traits pattern should require at least 12 bytes length of DNA
         let traits_base = TraitsBase::new_builder()
-            .push(trait_pool!("horn", horn_vec))
-            .push(trait_pool!("wings", wings_vec))
-            .push(trait_pool!("body", spirit_body_vec))
-            .push(trait_pool!("tail", tail_vec))
-            .push(trait_pool!("hair", hair_vec))
-            .push(trait_pool!("horseshoes", horseshoes_vec))
-            .push(trait_pool!("talent", talent_vec))
-            .push(trait_pool!("hp", hp_range))
-            .push(trait_pool!("lucky", lucky_range))
+            .push(trait_pool!("Spirits", spirits_vec))
+            .push(trait_pool!("Yin Yang", yin_yang_vec))
+            .push(trait_pool!("Talents", talents_vec))
+            .push(trait_pool!("Horn", horn_vec))
+            .push(trait_pool!("Wings", wings_vec))
+            .push(trait_pool!("Tails", tails_vec))
+            .push(trait_pool!("Horseshoes", horseshoes_vec))
+            .push(trait_pool!("Destiny Number", destiny_number_range))
+            .push(trait_pool!("Lucky Number", lucky_number_range))
             .build();
 
         let block_number = 12559090u64;
