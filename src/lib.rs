@@ -201,28 +201,28 @@ mod test {
             1,
             StringVec,
             vec![
-                "btcfs://1bc24351a0df2e686574cd1b6346a1f55f81cff0a2e52078a6e3ad0a35cfb833i0",
-                "btcfs://64f562d16e2a4a29e8c4821370fff473edfa22c26ef5808adb2404e39dc013e5i0",
-                "btcfs://c29fecd6d7d7eec0cb3a2b3dfdcb6aa26081db8f9851110b7c20a0f3c617299ai0",
-                "btcfs://59e87ca177ef0fd457e87e9f93627660022cf519b531e1f4e3a6dda9e5e33827i0",
-                "btcfs://a3589ddcf4b7a3c6da52fe6ae4ed3296f1ede139fe9127f2697ce0dcf2703b61i0",
-                "btcfs://799729ff6a16dd6af57db1a8ca6146d5673a30ad9a5976dd861d348a5eec28c4i0",
-                "btcfs://88dd2ab05bb8f9c72da42afc70677ac05f476e17e0f16551dc00635ae7e9546ei0",
-                "btcfs://b32e3bbb73cb877c9b411529930a5b6eb3280927b282c12486ce26901b3c2291i0",
-                "btcfs://a8b19ddab338db0c52f9a284b7d95ffeaa0de34e0b874177901eb92e0f9f9d8di0",
-                "btcfs://ba8b1bb9d8baee4bf24a06faa25b569410f2db96b4639f8e08ccbec05c88d79bi0",
-                "btcfs://aa8986f0ef667807d4b23970e64844dde3f0622542b79a5c302539de0c35b31ei0",
-                "btcfs://100f7e0f0965dc54515a3831a320881315cf5ca64ad01bed2b422616b15fd314i0",
-                "btcfs://b84ec0c770aa1961a3d9498ea8a67e1282532913fc1c13e3eaf5a48de2164fb9i0",
-                "btcfs://a06ba2e1614a5099176e5cc4d95de76cbeb4705a8bd7e142336278ebc290fdb3i0"
+                "btcfs://bd08c66dcaf6ae1daefddaf9028a2559e3e9cc58f8863ea07a990a5310788ae5i0",
+                "btcfs://bd08c66dcaf6ae1daefddaf9028a2559e3e9cc58f8863ea07a990a5310788ae5i0",
+                "btcfs://bd08c66dcaf6ae1daefddaf9028a2559e3e9cc58f8863ea07a990a5310788ae5i0",
+                "btcfs://bd08c66dcaf6ae1daefddaf9028a2559e3e9cc58f8863ea07a990a5310788ae5i0",
+                "btcfs://bd08c66dcaf6ae1daefddaf9028a2559e3e9cc58f8863ea07a990a5310788ae5i0",
+                "btcfs://bd08c66dcaf6ae1daefddaf9028a2559e3e9cc58f8863ea07a990a5310788ae5i0",
+                "btcfs://bd08c66dcaf6ae1daefddaf9028a2559e3e9cc58f8863ea07a990a5310788ae5i0",
+                "btcfs://bd08c66dcaf6ae1daefddaf9028a2559e3e9cc58f8863ea07a990a5310788ae5i0",
+                "btcfs://bd08c66dcaf6ae1daefddaf9028a2559e3e9cc58f8863ea07a990a5310788ae5i0",
+                "btcfs://bd08c66dcaf6ae1daefddaf9028a2559e3e9cc58f8863ea07a990a5310788ae5i0",
+                "btcfs://bd08c66dcaf6ae1daefddaf9028a2559e3e9cc58f8863ea07a990a5310788ae5i0",
+                "btcfs://bd08c66dcaf6ae1daefddaf9028a2559e3e9cc58f8863ea07a990a5310788ae5i0",
+                "btcfs://bd08c66dcaf6ae1daefddaf9028a2559e3e9cc58f8863ea07a990a5310788ae5i0",
+                "btcfs://bd08c66dcaf6ae1daefddaf9028a2559e3e9cc58f8863ea07a990a5310788ae5i0"
             ]
         );
         let prev_bgcolor_vec = trait_schema!(
             1,
             StringVec,
             vec![
-                "#FFE3EB", "#FFC2FE", "#CEBAF7", "#B7E6F9", "#ABF4D0", "#E0DFBD", "#F9F7A7",
-                "#E2BE91", "#F9C662", "#F7D6B2", "#FCA863", "#F9ACAC", "#E0E1E2", "#A3A7AA"
+                "#FFE3EB", "#FFBDFC", "#D4C0FF", "#AFE7F9", "#ABF4D0", "#E8EABE", "#FCF8AC",
+                "#EABC8B", "#FFD880", "#FFE2C7", "#FFB57D", "#FFADAB", "#E0E1E2", "#A3A7AA"
             ]
         );
         let number_range = trait_schema!(1, NumberRange, (0, 255));
