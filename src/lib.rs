@@ -224,7 +224,7 @@ mod test {
         let yinyang_vec = trait_schema!(
             1,
             StringVec,
-            vec!["(%wuxing_yinyang):['Yin, Long hair', 'Yang, Short Hair', 'Yin, Long hair', 'Yang, Short Hair', 'Yin, Long hair', 'Yang, Short Hair', 'Yin, Long hair', 'Yang, Short Hair', 'Yin, Long hair', 'Yang, Short Hair']"]
+            vec!["(%wuxing_yinyang):['Yin, Long hair', 'Yin, Long hair', 'Yin, Long hair', 'Yin, Long hair', 'Yin, Long hair', 'Yang, Short Hair', 'Yang, Short Hair', 'Yang, Short Hair', 'Yang, Short Hair', 'Yang, Short Hair']"]
         );
         // 阴金木水火土 + 阳金木水火土
         let talents_vec = trait_schema!(
