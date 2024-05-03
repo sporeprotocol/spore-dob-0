@@ -49,44 +49,196 @@ mod test {
         }}
     }
 
+    // #[test]
+    // fn test_dna_decode_unicorn() {
+    //     let spirits_vec = trait_schema!(
+    //         1,
+    //         StringVec,
+    //         vec![
+    //             "Wood, Blue Body",
+    //             "Fire, Red Body",
+    //             "Earth, Colorful Body",
+    //             "Metal, Golden Body",
+    //             "Water, White Body"
+    //         ]
+    //     );
+    //     let yin_yang_vec = trait_schema!(1, StringVec, vec!["Yang, Short Hair", "Yin, Long hair"]);
+    //     let talents_vec = trait_schema!(
+    //         1,
+    //         StringVec,
+    //         vec![
+    //             "Revival", "Death", "Curse", "Prophet", "Crown", "Hermit", "Attack", "Guard",
+    //             "Summon", "Forget"
+    //         ]
+    //     );
+    //     let horn_vec = trait_schema!(
+    //         1,
+    //         StringVec,
+    //         vec![
+    //             "Shaman Horn",
+    //             "Hel Horn",
+    //             "Necromancer Horn",
+    //             "Sibyl Horn ",
+    //             "Caesar Horn",
+    //             "Lao Tsu Horn",
+    //             "Warrior Horn",
+    //             "Praetorian Horn",
+    //             "Bard Horn",
+    //             "Lethe Horn"
+    //         ]
+    //     );
+    //     let wings_vec = trait_schema!(
+    //         1,
+    //         StringVec,
+    //         vec![
+    //             "Wind Wings",
+    //             "Night Shadow Wings",
+    //             "Lightning Wings",
+    //             "Sun Wings",
+    //             "Golden Wings",
+    //             "Cloud Wings",
+    //             "Morning Glow Wings",
+    //             "Star Wings",
+    //             "Spring Wings",
+    //             "Moon Wings"
+    //         ]
+    //     );
+    //     let tails_vec = trait_schema!(
+    //         1,
+    //         StringVec,
+    //         vec![
+    //             "Meteor Tails",
+    //             "Rainbow Tails",
+    //             "Willow Tails",
+    //             "Phoenix Tails",
+    //             "Sunset Shadow Tails",
+    //             "Socrates Tails",
+    //             "Dumbledore Tails",
+    //             "Venus Tails",
+    //             "Gaia Tails"
+    //         ]
+    //     );
+    //     let horseshoes_vec = trait_schema!(
+    //         1,
+    //         StringVec,
+    //         vec![
+    //             "Ice Horseshoes",
+    //             "Dimond Horseshoes",
+    //             "Rock Horseshoes",
+    //             "Flame Horseshoes",
+    //             "Thunder Horseshoes",
+    //             "Lotus Horseshoes",
+    //             "Silver Horseshoes",
+    //             "Golden Horseshoes",
+    //             "Red Maple Horseshoes",
+    //             "Blue Lake Horseshoes",
+    //             "Colorful Stone Horseshoes"
+    //         ]
+    //     );
+    //     let destiny_number_range = trait_schema!(4, NumberRange, (50000, 100000));
+    //     let lucky_number_range = trait_schema!(1, NumberRange, (1, 49));
+
+    //     // this traits pattern should require at least 12 bytes length of DNA
+    //     let traits_base = TraitsBase::new_builder()
+    //         .push(trait_pool!("Spirits", spirits_vec))
+    //         .push(trait_pool!("Yin Yang", yin_yang_vec))
+    //         .push(trait_pool!("Talents", talents_vec))
+    //         .push(trait_pool!("Horn", horn_vec))
+    //         .push(trait_pool!("Wings", wings_vec))
+    //         .push(trait_pool!("Tails", tails_vec))
+    //         .push(trait_pool!("Horseshoes", horseshoes_vec))
+    //         .push(trait_pool!("Destiny Number", destiny_number_range))
+    //         .push(trait_pool!("Lucky Number", lucky_number_range))
+    //         .build();
+
+    //     let block_number = 12559090u64;
+    //     let cell_id = {
+    //         let dob_tx_hash =
+    //             h256!("0xe0cc0c77de31483b27384753ec36a1f413bbbf79535c7605a882d490357de97b");
+    //         let dob_out_index = 0u32;
+    //         let mut hash = Blake2bBuilder::new(8)
+    //             .personal(CKB_HASH_PERSONALIZATION)
+    //             .build();
+    //         hash.update(dob_tx_hash.as_bytes());
+    //         hash.update(&dob_out_index.to_le_bytes());
+    //         let mut cell_id = [0u8; 8];
+    //         hash.finalize(&mut cell_id);
+    //         u64::from_le_bytes(cell_id)
+    //     };
+    //     let unicorn_dna = {
+    //         let mut hash = Blake2bBuilder::new(12)
+    //             .personal(CKB_HASH_PERSONALIZATION)
+    //             .build();
+    //         hash.update(&block_number.to_le_bytes());
+    //         hash.update(&cell_id.to_le_bytes());
+    //         let mut dna = [0u8; 12];
+    //         hash.finalize(&mut dna);
+    //         dna.to_vec()
+    //     };
+
+    //     println!("hexed_unicorn_dna = {}\n", hex::encode(&unicorn_dna));
+    //     println!("block_number = {block_number}\n");
+    //     println!("cell_id = {cell_id}\n");
+    //     println!(
+    //         "hexed_trats_base = {}\n",
+    //         hex::encode(traits_base.as_slice())
+    //     );
+
+    //     let dna_traits = dobs_decode(Parameters {
+    //         spore_dna: unicorn_dna,
+    //         traits_base,
+    //     })
+    //     .map_err(|error| format!("error code = {}", error as u64))
+    //     .unwrap();
+
+    //     println!("{}", String::from_utf8_lossy(&dna_traits));
+    // }
+
     #[test]
     fn test_dna_decode_unicorn() {
+        // 阴金木水火土 + 阳金木水火土
+        let wuxing_yinyang_vec = trait_schema!(
+            1,
+            StringVec,
+            vec!["0<_>", "1<_>", "2<_>", "3<_>", "4<_>", "5<_>", "6<_>", "7<_>", "8<_>", "9<_>",]
+        );
+        // 黄蓝紫红黑 x 2 (五行决定背景颜色, 需要取余)
+        let prev_bgcolor_vec = trait_schema!(
+            1,
+            StringVec,
+            vec!["(%wuxing_yinyang):['#FFFF00', '#0000FF', '#FF00FF', '#FF0000', '#000000']"]
+        );
+        // 黑黑黑黑黑 + 白白白白白 (阴阳决定字体颜色)
+        let prev_vec = trait_schema!(
+            1,
+            StringVec,
+            vec!["(%wuxing_yinyang):['#FFFFFF', '#FFFFFF', '#FFFFFF', '#FFFFFF', '#FFFFFF', '#000000', '#000000', '#000000', '#000000', '#000000'])"]
+        );
+        // 与 "金木水火土" 一一对应 (需要取余)
         let spirits_vec = trait_schema!(
             1,
             StringVec,
-            vec![
-                "Wood, Blue Body",
-                "Fire, Red Body",
-                "Earth, Colorful Body",
-                "Metal, Golden Body",
-                "Water, White Body"
-            ]
+            vec!["(%wuxing_yinyang):['Metal, Golden Body', 'Wood, Blue Body', 'Water, White Body' 'Fire, Red Body', 'Earth, Colorful Body']"]
         );
-        let yin_yang_vec = trait_schema!(1, StringVec, vec!["Yang, Short Hair", "Yin, Long hair"]);
+        // 阴阴阴阴阴 + 阳阳阳阳阳
+        let yinyang_vec = trait_schema!(
+            1,
+            StringVec,
+            vec!["(%wuxing_yinyang):['Yin, Long hair', 'Yang, Short Hair', 'Yin, Long hair', 'Yang, Short Hair', 'Yin, Long hair', 'Yang, Short Hair', 'Yin, Long hair', 'Yang, Short Hair', 'Yin, Long hair', 'Yang, Short Hair']"]
+        );
+        // 阴金木水火土 + 阳金木水火土
         let talents_vec = trait_schema!(
             1,
             StringVec,
-            vec![
-                "Revival", "Death", "Curse", "Prophet", "Crown", "Hermit", "Attack", "Guard",
-                "Summon", "Forget"
-            ]
+            vec!["(%wuxing_yinyang):['Guard', 'Attack', 'Death', 'Revival', 'Forget', 'Summon', 'Prophet', 'Curse', 'Hermit', 'Crown']"]
         );
+        // 阴金木水火土 + 阳金木水火土
         let horn_vec = trait_schema!(
             1,
             StringVec,
-            vec![
-                "Shaman Horn",
-                "Hel Horn",
-                "Necromancer Horn",
-                "Sibyl Horn ",
-                "Caesar Horn",
-                "Lao Tsu Horn",
-                "Warrior Horn",
-                "Praetorian Horn",
-                "Bard Horn",
-                "Lethe Horn"
-            ]
+            vec!["(%wuxing_yinyang):['Praetorian Horn', 'Warrior Horn', 'Hel Horn', 'Shaman Horn', 'Lethe Horn', 'Bard Horn', 'Sibyl Horn ', 'Necromancer Horn', 'Lao Tsu Horn', 'Caesar Horn']"]
         );
+        // 随机
         let wings_vec = trait_schema!(
             1,
             StringVec,
@@ -103,6 +255,7 @@ mod test {
                 "Moon Wings"
             ]
         );
+        // 随机
         let tails_vec = trait_schema!(
             1,
             StringVec,
@@ -118,6 +271,7 @@ mod test {
                 "Gaia Tails"
             ]
         );
+        // 随机
         let horseshoes_vec = trait_schema!(
             1,
             StringVec,
@@ -135,13 +289,18 @@ mod test {
                 "Colorful Stone Horseshoes"
             ]
         );
+        // 随机
         let destiny_number_range = trait_schema!(4, NumberRange, (50000, 100000));
+        // 随机
         let lucky_number_range = trait_schema!(1, NumberRange, (1, 49));
 
         // this traits pattern should require at least 12 bytes length of DNA
         let traits_base = TraitsBase::new_builder()
+            .push(trait_pool!("wuxing_yinyang", wuxing_yinyang_vec))
+            .push(trait_pool!("prev_bgcolor", prev_bgcolor_vec))
+            .push(trait_pool!("prev<%v>", prev_vec))
             .push(trait_pool!("Spirits", spirits_vec))
-            .push(trait_pool!("Yin Yang", yin_yang_vec))
+            .push(trait_pool!("Yin Yang", yinyang_vec))
             .push(trait_pool!("Talents", talents_vec))
             .push(trait_pool!("Horn", horn_vec))
             .push(trait_pool!("Wings", wings_vec))
@@ -166,12 +325,12 @@ mod test {
             u64::from_le_bytes(cell_id)
         };
         let unicorn_dna = {
-            let mut hash = Blake2bBuilder::new(12)
+            let mut hash = Blake2bBuilder::new(16)
                 .personal(CKB_HASH_PERSONALIZATION)
                 .build();
             hash.update(&block_number.to_le_bytes());
             hash.update(&cell_id.to_le_bytes());
-            let mut dna = [0u8; 12];
+            let mut dna = [0u8; 16];
             hash.finalize(&mut dna);
             dna.to_vec()
         };
