@@ -50,7 +50,7 @@ mod test {
     }
 
     // #[test]
-    // fn test_dna_decode_unicorn() {
+    // fn test_dna_decode() {
     //     let spirits_vec = trait_schema!(
     //         1,
     //         StringVec,
@@ -294,7 +294,7 @@ mod test {
         // 随机
         let lucky_number_range = trait_schema!(1, NumberRange, (1, 49));
 
-        // this traits pattern should require at least 12 bytes length of DNA
+        // this traits pattern should require at least 16 bytes length of DNA
         let traits_base = TraitsBase::new_builder()
             .push(trait_pool!("wuxing_yinyang", wuxing_yinyang_vec))
             .push(trait_pool!("prev_bgcolor", prev_bgcolor_vec))
