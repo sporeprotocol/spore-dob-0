@@ -297,7 +297,7 @@ mod test {
         // this traits pattern should require at least 16 bytes length of DNA
         let traits_base = TraitsBase::new_builder()
             .push(trait_pool!("wuxing_yinyang", wuxing_yinyang_vec))
-            .push(trait_pool!("prev_bgcolor", prev_bgcolor_vec))
+            .push(trait_pool!("prev.bgcolor", prev_bgcolor_vec))
             .push(trait_pool!("prev<%v>", prev_vec))
             .push(trait_pool!("Spirits", spirits_vec))
             .push(trait_pool!("Yin Yang", yinyang_vec))
