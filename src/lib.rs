@@ -230,7 +230,7 @@ mod test {
         let talents_vec = trait_schema!(
             1,
             StringVec,
-            vec!["(%wuxing_yinyang):['Guard', 'Attack', 'Death', 'Revival', 'Forget', 'Summon', 'Prophet', 'Curse', 'Hermit', 'Crown']"]
+            vec!["(%wuxing_yinyang):['Guard<~>', 'Attack<~>', 'Death<~>', 'Revival<~>', 'Forget<~>', 'Summon<~>', 'Prophet<~>', 'Curse<~>', 'Hermit<~>', 'Crown<~>']"]
         );
         // 阴金木水火土 + 阳金木水火土
         let horn_vec = trait_schema!(
