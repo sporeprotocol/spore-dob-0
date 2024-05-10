@@ -206,7 +206,7 @@ mod test {
         let prev_bgcolor_vec = trait_schema!(
             1,
             StringVec,
-            vec!["(%wuxing_yinyang):['#FFFF00', '#0000FF', '#FF00FF', '#FF0000', '#FF0000#FFFF00@\']"]
+            vec!["(%wuxing_yinyang):['#DBAB00', '#09D3FF', '#A028E9', '#FF3939', '#(135deg, #FE4F4F, #66C084, #00E2E2, #E180E2, #F4EC32)']"]
         );
         // 黑黑黑黑黑 + 白白白白白 (阴阳决定字体颜色)
         let prev_vec = trait_schema!(
