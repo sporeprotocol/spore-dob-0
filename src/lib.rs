@@ -200,7 +200,7 @@ mod test {
         let wuxing_yinyang_vec = trait_schema!(
             1,
             StringVec,
-            vec!["0<_>", "1<_>", "2<_>", "3<_>", "4<_>", "5<_>", "6<_>", "7<_>", "8<_>", "9<_>",]
+            vec!["0<_>", "1<_>", "2<_>", "3<_>", "4<_>", "5<_>", "6<_>", "7<_>", "8<_>", "9<_>"]
         );
         // 黄蓝紫红黑 x 2 (五行决定背景颜色, 需要取余)
         let prev_bgcolor_vec = trait_schema!(
@@ -212,13 +212,13 @@ mod test {
         let prev_vec = trait_schema!(
             1,
             StringVec,
-            vec!["(%wuxing_yinyang):['#FFFFFF', '#FFFFFF', '#FFFFFF', '#FFFFFF', '#FFFFFF', '#000000', '#000000', '#000000', '#000000', '#000000'])"]
+            vec!["(%wuxing_yinyang):['#000000', '#000000', '#000000', '#000000', '#000000', '#FFFFFF', '#FFFFFF', '#FFFFFF', '#FFFFFF', '#FFFFFF'])"]
         );
         // 与 "金木水火土" 一一对应 (需要取余)
         let spirits_vec = trait_schema!(
             1,
             StringVec,
-            vec!["(%wuxing_yinyang):['Metal, Golden Body', 'Wood, Blue Body', 'Water, White Body' 'Fire, Red Body', 'Earth, Colorful Body']"]
+            vec!["(%wuxing_yinyang):['Metal, Golden Body', 'Wood, Blue Body', 'Water, White Body', 'Fire, Red Body', 'Earth, Colorful Body']"]
         );
         // 阴阴阴阴阴 + 阳阳阳阳阳
         let yinyang_vec = trait_schema!(
@@ -230,13 +230,13 @@ mod test {
         let talents_vec = trait_schema!(
             1,
             StringVec,
-            vec!["(%wuxing_yinyang):['Guard<~>', 'Attack<~>', 'Death<~>', 'Revival<~>', 'Forget<~>', 'Summon<~>', 'Prophet<~>', 'Curse<~>', 'Hermit<~>', 'Crown<~>']"]
+            vec!["(%wuxing_yinyang):['Guard<~>', 'Death<~>', 'Forget<~>', 'Prophet<~>', 'Hermit<~>', 'Attack<~>', 'Revival<~>', 'Summon<~>', 'Curse<~>', 'Crown<~>']"]
         );
         // 阴金木水火土 + 阳金木水火土
         let horn_vec = trait_schema!(
             1,
             StringVec,
-            vec!["(%wuxing_yinyang):['Praetorian Horn', 'Warrior Horn', 'Hel Horn', 'Shaman Horn', 'Lethe Horn', 'Bard Horn', 'Sibyl Horn ', 'Necromancer Horn', 'Lao Tsu Horn', 'Caesar Horn']"]
+            vec!["(%wuxing_yinyang):['Praetorian Horn', 'Hel Horn', 'Lethe Horn', 'Sibyl Horn ', 'Lao Tsu Horn', 'Warrior Horn', 'Shaman Horn', 'Bard Horn', 'Necromancer Horn', 'Caesar Horn']"]
         );
         // 随机
         let wings_vec = trait_schema!(
