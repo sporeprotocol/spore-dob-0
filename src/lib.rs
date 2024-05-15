@@ -230,13 +230,13 @@ mod test {
         let talents_vec = trait_schema!(
             1,
             StringVec,
-            vec!["(%wuxing_yinyang):['Guard<~>', 'Death<~>', 'Forget<~>', 'Prophet<~>', 'Hermit<~>', 'Attack<~>', 'Revival<~>', 'Summon<~>', 'Curse<~>', 'Crown<~>']"]
+            vec!["(%wuxing_yinyang):['Guard<~>', 'Death<~>', 'Forget<~>', 'Curse<~>', 'Hermit<~>', 'Attack<~>', 'Revival<~>', 'Summon<~>', 'Prophet<~>', 'Crown<~>']"]
         );
         // 阴金木水火土 + 阳金木水火土
         let horn_vec = trait_schema!(
             1,
             StringVec,
-            vec!["(%wuxing_yinyang):['Praetorian Horn', 'Hel Horn', 'Lethe Horn', 'Sibyl Horn ', 'Lao Tsu Horn', 'Warrior Horn', 'Shaman Horn', 'Bard Horn', 'Necromancer Horn', 'Caesar Horn']"]
+            vec!["(%wuxing_yinyang):['Praetorian Horn', 'Hel Horn', 'Lethe Horn', 'Necromancer Horn', 'Lao Tsu Horn', 'Warrior Horn', 'Shaman Horn', 'Bard Horn', 'Sibyl Horn', 'Caesar Horn']"]
         );
         // 随机
         let wings_vec = trait_schema!(
@@ -252,23 +252,24 @@ mod test {
                 "Morning Glow Wings",
                 "Star Wings",
                 "Spring Wings",
-                "Moon Wings"
+                "Moon Wings",
+                "Angel Wings",
             ]
         );
         // 随机
-        let tails_vec = trait_schema!(
+        let tail_vec = trait_schema!(
             1,
             StringVec,
             vec![
-                "Meteor Tails",
-                "Rainbow Tails",
-                "Willow Tails",
-                "Phoenix Tails",
-                "Sunset Shadow Tails",
-                "Socrates Tails",
-                "Dumbledore Tails",
-                "Venus Tails",
-                "Gaia Tails"
+                "Meteor Tail",
+                "Rainbow Tail",
+                "Willow Tail",
+                "Phoenix Tail",
+                "Sunset Shadow Tail",
+                "Socrates Tail",
+                "Dumbledore Tail",
+                "Venus Tail",
+                "Gaia Tail"
             ]
         );
         // 随机
@@ -277,16 +278,12 @@ mod test {
             StringVec,
             vec![
                 "Ice Horseshoes",
-                "Dimond Horseshoes",
-                "Rock Horseshoes",
+                "Crystal Horseshoes",
+                "Maple Horseshoes",
                 "Flame Horseshoes",
                 "Thunder Horseshoes",
                 "Lotus Horseshoes",
                 "Silver Horseshoes",
-                "Golden Horseshoes",
-                "Red Maple Horseshoes",
-                "Blue Lake Horseshoes",
-                "Colorful Stone Horseshoes"
             ]
         );
         // 随机
@@ -304,7 +301,7 @@ mod test {
             .push(trait_pool!("Talents", talents_vec))
             .push(trait_pool!("Horn", horn_vec))
             .push(trait_pool!("Wings", wings_vec))
-            .push(trait_pool!("Tails", tails_vec))
+            .push(trait_pool!("Tails", tail_vec))
             .push(trait_pool!("Horseshoes", horseshoes_vec))
             .push(trait_pool!("Destiny Number", destiny_number_range))
             .push(trait_pool!("Lucky Number", lucky_number_range))
