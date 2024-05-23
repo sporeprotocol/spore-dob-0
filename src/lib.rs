@@ -2,247 +2,95 @@
 
 extern crate alloc;
 pub mod decoder;
-pub mod schema;
 
 #[cfg(test)]
 mod test {
     use ckb_hash::{Blake2bBuilder, CKB_HASH_PERSONALIZATION};
     use ckb_types::h256;
-    use molecule::prelude::{Builder, Entity};
 
-    use crate::decoder::{dobs_decode, types::Parameters};
-    use crate::schema::dob_0::{
-        Trait, TraitPool, TraitPoolOpt, TraitPoolUnion, TraitSchema, TraitSchemaVec, TraitsBase,
+    use crate::decoder::{
+        dobs_decode,
+        types::{ArgsType, Parameters, Pattern, TraitSchema},
     };
 
-    macro_rules! trait_schema {
-        ($bl:expr, $uni:ident, $val:expr) => {{
-            let trait_pool_opt = TraitPoolOpt::new_builder()
-                .set(Some(
-                    TraitPool::new_builder()
-                        .set(TraitPoolUnion::$uni($val.into()))
-                        .build(),
-                ))
-                .build();
-            TraitSchema::new_builder()
-                .byte_length($bl.into())
-                .trait_pool(trait_pool_opt)
-                .build()
-        }};
-        ($bl:expr) => {{
-            let trait_pool_opt = TraitPoolOpt::new_builder().set(None).build();
-            TraitSchema::new_builder()
-                .byte_length($bl.into())
-                .trait_pool(trait_pool_opt)
-                .build()
-        }};
-    }
-
-    macro_rules! trait_pool {
-        ($name:expr $(, $pool:expr)+) => {{
-            let pool = vec![$($pool,)+];
-            let schema_vec = TraitSchemaVec::new_builder().set(pool).build();
-            Trait::new_builder()
-                .name(String::from($name).into())
-                .schema_pool(schema_vec)
-                .build()
-        }}
-    }
-
-    // #[test]
-    // fn test_dna_decode() {
-    //     let spirits_vec = trait_schema!(
-    //         1,
-    //         StringVec,
-    //         vec![
-    //             "Wood, Blue Body",
-    //             "Fire, Red Body",
-    //             "Earth, Colorful Body",
-    //             "Metal, Golden Body",
-    //             "Water, White Body"
-    //         ]
-    //     );
-    //     let yin_yang_vec = trait_schema!(1, StringVec, vec!["Yang, Short Hair", "Yin, Long hair"]);
-    //     let talents_vec = trait_schema!(
-    //         1,
-    //         StringVec,
-    //         vec![
-    //             "Revival", "Death", "Curse", "Prophet", "Crown", "Hermit", "Attack", "Guard",
-    //             "Summon", "Forget"
-    //         ]
-    //     );
-    //     let horn_vec = trait_schema!(
-    //         1,
-    //         StringVec,
-    //         vec![
-    //             "Shaman Horn",
-    //             "Hel Horn",
-    //             "Necromancer Horn",
-    //             "Sibyl Horn ",
-    //             "Caesar Horn",
-    //             "Lao Tsu Horn",
-    //             "Warrior Horn",
-    //             "Praetorian Horn",
-    //             "Bard Horn",
-    //             "Lethe Horn"
-    //         ]
-    //     );
-    //     let wings_vec = trait_schema!(
-    //         1,
-    //         StringVec,
-    //         vec![
-    //             "Wind Wings",
-    //             "Night Shadow Wings",
-    //             "Lightning Wings",
-    //             "Sun Wings",
-    //             "Golden Wings",
-    //             "Cloud Wings",
-    //             "Morning Glow Wings",
-    //             "Star Wings",
-    //             "Spring Wings",
-    //             "Moon Wings"
-    //         ]
-    //     );
-    //     let tails_vec = trait_schema!(
-    //         1,
-    //         StringVec,
-    //         vec![
-    //             "Meteor Tails",
-    //             "Rainbow Tails",
-    //             "Willow Tails",
-    //             "Phoenix Tails",
-    //             "Sunset Shadow Tails",
-    //             "Socrates Tails",
-    //             "Dumbledore Tails",
-    //             "Venus Tails",
-    //             "Gaia Tails"
-    //         ]
-    //     );
-    //     let horseshoes_vec = trait_schema!(
-    //         1,
-    //         StringVec,
-    //         vec![
-    //             "Ice Horseshoes",
-    //             "Dimond Horseshoes",
-    //             "Rock Horseshoes",
-    //             "Flame Horseshoes",
-    //             "Thunder Horseshoes",
-    //             "Lotus Horseshoes",
-    //             "Silver Horseshoes",
-    //             "Golden Horseshoes",
-    //             "Red Maple Horseshoes",
-    //             "Blue Lake Horseshoes",
-    //             "Colorful Stone Horseshoes"
-    //         ]
-    //     );
-    //     let destiny_number_range = trait_schema!(4, NumberRange, (50000, 100000));
-    //     let lucky_number_range = trait_schema!(1, NumberRange, (1, 49));
-
-    //     // this traits pattern should require at least 12 bytes length of DNA
-    //     let traits_base = TraitsBase::new_builder()
-    //         .push(trait_pool!("Spirits", spirits_vec))
-    //         .push(trait_pool!("Yin Yang", yin_yang_vec))
-    //         .push(trait_pool!("Talents", talents_vec))
-    //         .push(trait_pool!("Horn", horn_vec))
-    //         .push(trait_pool!("Wings", wings_vec))
-    //         .push(trait_pool!("Tails", tails_vec))
-    //         .push(trait_pool!("Horseshoes", horseshoes_vec))
-    //         .push(trait_pool!("Destiny Number", destiny_number_range))
-    //         .push(trait_pool!("Lucky Number", lucky_number_range))
-    //         .build();
-
-    //     let block_number = 12559090u64;
-    //     let cell_id = {
-    //         let dob_tx_hash =
-    //             h256!("0xe0cc0c77de31483b27384753ec36a1f413bbbf79535c7605a882d490357de97b");
-    //         let dob_out_index = 0u32;
-    //         let mut hash = Blake2bBuilder::new(8)
-    //             .personal(CKB_HASH_PERSONALIZATION)
-    //             .build();
-    //         hash.update(dob_tx_hash.as_bytes());
-    //         hash.update(&dob_out_index.to_le_bytes());
-    //         let mut cell_id = [0u8; 8];
-    //         hash.finalize(&mut cell_id);
-    //         u64::from_le_bytes(cell_id)
-    //     };
-    //     let unicorn_dna = {
-    //         let mut hash = Blake2bBuilder::new(12)
-    //             .personal(CKB_HASH_PERSONALIZATION)
-    //             .build();
-    //         hash.update(&block_number.to_le_bytes());
-    //         hash.update(&cell_id.to_le_bytes());
-    //         let mut dna = [0u8; 12];
-    //         hash.finalize(&mut dna);
-    //         dna.to_vec()
-    //     };
-
-    //     println!("hexed_unicorn_dna = {}\n", hex::encode(&unicorn_dna));
-    //     println!("block_number = {block_number}\n");
-    //     println!("cell_id = {cell_id}\n");
-    //     println!(
-    //         "hexed_trats_base = {}\n",
-    //         hex::encode(traits_base.as_slice())
-    //     );
-
-    //     let dna_traits = dobs_decode(Parameters {
-    //         spore_dna: unicorn_dna,
-    //         traits_base,
-    //     })
-    //     .map_err(|error| format!("error code = {}", error as u64))
-    //     .unwrap();
-
-    //     println!("{}", String::from_utf8_lossy(&dna_traits));
-    // }
+    const EXPECTED_UNICORN_RENDER_RESULT: &str = "[{\"name\":\"wuxing_yinyang\",\"traits\":[{\"String\":\"3<_>\"}]},{\"name\":\"prev.bgcolor\",\"traits\":[{\"String\":\"(%wuxing_yinyang):['#DBAB00', '#09D3FF', '#A028E9', '#FF3939', '#(135deg, #FE4F4F, #66C084, #00E2E2, #E180E2, #F4EC32)']\"}]},{\"name\":\"prev<%v>\",\"traits\":[{\"String\":\"(%wuxing_yinyang):['#000000', '#000000', '#000000', '#000000', '#000000', '#FFFFFF', '#FFFFFF', '#FFFFFF', '#FFFFFF', '#FFFFFF'])\"}]},{\"name\":\"Spirits\",\"traits\":[{\"String\":\"(%wuxing_yinyang):['Metal, Golden Body', 'Wood, Blue Body', 'Water, White Body', 'Fire, Red Body', 'Earth, Colorful Body']\"}]},{\"name\":\"Yin Yang\",\"traits\":[{\"String\":\"(%wuxing_yinyang):['Yin, Long hair', 'Yin, Long hair', 'Yin, Long hair', 'Yin, Long hair', 'Yin, Long hair', 'Yang, Short Hair', 'Yang, Short Hair', 'Yang, Short Hair', 'Yang, Short Hair', 'Yang, Short Hair']\"}]},{\"name\":\"Talents\",\"traits\":[{\"String\":\"(%wuxing_yinyang):['Guard<~>', 'Death<~>', 'Forget<~>', 'Curse<~>', 'Hermit<~>', 'Attack<~>', 'Revival<~>', 'Summon<~>', 'Prophet<~>', 'Crown<~>']\"}]},{\"name\":\"Horn\",\"traits\":[{\"String\":\"(%wuxing_yinyang):['Praetorian Horn', 'Hel Horn', 'Lethe Horn', 'Necromancer Horn', 'Lao Tsu Horn', 'Warrior Horn', 'Shaman Horn', 'Bard Horn', 'Sibyl Horn', 'Caesar Horn']\"}]},{\"name\":\"Wings\",\"traits\":[{\"String\":\"Sun Wings\"}]},{\"name\":\"Tail\",\"traits\":[{\"String\":\"Meteor Tail\"}]},{\"name\":\"Horseshoes\",\"traits\":[{\"String\":\"Silver Horseshoes\"}]},{\"name\":\"Destiny Number\",\"traits\":[{\"Number\":65321}]},{\"name\":\"Lucky Number\",\"traits\":[{\"Number\":35}]}]";
+    const EXPECTED_NERVAPE_RENDER_RESULT: &str = "[{\"name\":\"prev.type\",\"traits\":[{\"String\":\"image\"}]},{\"name\":\"prev.bg\",\"traits\":[{\"String\":\"btcfs://59e87ca177ef0fd457e87e9f93627660022cf519b531e1f4e3a6dda9e5e33827i0\"}]},{\"name\":\"prev.bgcolor\",\"traits\":[{\"String\":\"#CEBAF7\"}]},{\"name\":\"Background\",\"traits\":[{\"Number\":170}]},{\"name\":\"Suit\",\"traits\":[{\"Number\":236}]},{\"name\":\"Upper body\",\"traits\":[{\"Number\":53}]},{\"name\":\"Lower body\",\"traits\":[{\"Number\":189}]},{\"name\":\"Headwear\",\"traits\":[{\"Number\":175}]},{\"name\":\"Mask\",\"traits\":[{\"Number\":153}]},{\"name\":\"Eyewear\",\"traits\":[{\"Number\":126}]},{\"name\":\"Mouth\",\"traits\":[{\"Number\":14}]},{\"name\":\"Ears\",\"traits\":[{\"Number\":165}]},{\"name\":\"Tattoo\",\"traits\":[{\"Number\":231}]},{\"name\":\"Accessory\",\"traits\":[{\"Number\":78}]},{\"name\":\"Handheld\",\"traits\":[{\"Number\":240}]},{\"name\":\"Special\",\"traits\":[{\"Number\":70}]}]";
 
     #[test]
     fn test_dna_decode_unicorn() {
         // 阴金木水火土 + 阳金木水火土
-        let wuxing_yinyang_vec = trait_schema!(
+        let wuxing_yinyang = TraitSchema::new(
+            "wuxing_yinyang",
+            ArgsType::String,
+            0,
             1,
-            StringVec,
-            vec!["0<_>", "1<_>", "2<_>", "3<_>", "4<_>", "5<_>", "6<_>", "7<_>", "8<_>", "9<_>"]
+            Pattern::Options,
+            Some(vec![
+                "0<_>", "1<_>", "2<_>", "3<_>", "4<_>", "5<_>", "6<_>", "7<_>", "8<_>", "9<_>",
+            ]),
         );
         // 黄蓝紫红黑 x 2 (五行决定背景颜色, 需要取余)
-        let prev_bgcolor_vec = trait_schema!(
+        let prev_bgcolor = TraitSchema::new(
+            "prev.bgcolor",
+            ArgsType::String,
             1,
-            StringVec,
-            vec!["(%wuxing_yinyang):['#DBAB00', '#09D3FF', '#A028E9', '#FF3939', '#(135deg, #FE4F4F, #66C084, #00E2E2, #E180E2, #F4EC32)']"]
+            1,
+            Pattern::Options,
+            Some(vec!["(%wuxing_yinyang):['#DBAB00', '#09D3FF', '#A028E9', '#FF3939', '#(135deg, #FE4F4F, #66C084, #00E2E2, #E180E2, #F4EC32)']"]),
         );
         // 黑黑黑黑黑 + 白白白白白 (阴阳决定字体颜色)
-        let prev_vec = trait_schema!(
+        let prev = TraitSchema::new(
+            "prev<%v>",
+            ArgsType::String,
+            2,
             1,
-            StringVec,
-            vec!["(%wuxing_yinyang):['#000000', '#000000', '#000000', '#000000', '#000000', '#FFFFFF', '#FFFFFF', '#FFFFFF', '#FFFFFF', '#FFFFFF'])"]
+            Pattern::Options,
+            Some(vec!["(%wuxing_yinyang):['#000000', '#000000', '#000000', '#000000', '#000000', '#FFFFFF', '#FFFFFF', '#FFFFFF', '#FFFFFF', '#FFFFFF'])"]),
         );
         // 与 "金木水火土" 一一对应 (需要取余)
-        let spirits_vec = trait_schema!(
+        let spirits = TraitSchema::new(
+            "Spirits",
+            ArgsType::String,
+            3,
             1,
-            StringVec,
-            vec!["(%wuxing_yinyang):['Metal, Golden Body', 'Wood, Blue Body', 'Water, White Body', 'Fire, Red Body', 'Earth, Colorful Body']"]
+            Pattern::Options,
+            Some(vec!["(%wuxing_yinyang):['Metal, Golden Body', 'Wood, Blue Body', 'Water, White Body', 'Fire, Red Body', 'Earth, Colorful Body']"]),
         );
         // 阴阴阴阴阴 + 阳阳阳阳阳
-        let yinyang_vec = trait_schema!(
+        let yinyang = TraitSchema::new(
+            "Yin Yang",
+            ArgsType::String,
+            4,
             1,
-            StringVec,
-            vec!["(%wuxing_yinyang):['Yin, Long hair', 'Yin, Long hair', 'Yin, Long hair', 'Yin, Long hair', 'Yin, Long hair', 'Yang, Short Hair', 'Yang, Short Hair', 'Yang, Short Hair', 'Yang, Short Hair', 'Yang, Short Hair']"]
+            Pattern::Options,
+            Some(vec!["(%wuxing_yinyang):['Yin, Long hair', 'Yin, Long hair', 'Yin, Long hair', 'Yin, Long hair', 'Yin, Long hair', 'Yang, Short Hair', 'Yang, Short Hair', 'Yang, Short Hair', 'Yang, Short Hair', 'Yang, Short Hair']"]),
         );
         // 阴金木水火土 + 阳金木水火土
-        let talents_vec = trait_schema!(
+        let talents = TraitSchema::new(
+            "Talents",
+            ArgsType::String,
+            5,
             1,
-            StringVec,
-            vec!["(%wuxing_yinyang):['Guard<~>', 'Death<~>', 'Forget<~>', 'Curse<~>', 'Hermit<~>', 'Attack<~>', 'Revival<~>', 'Summon<~>', 'Prophet<~>', 'Crown<~>']"]
+            Pattern::Options,
+            Some(vec!["(%wuxing_yinyang):['Guard<~>', 'Death<~>', 'Forget<~>', 'Curse<~>', 'Hermit<~>', 'Attack<~>', 'Revival<~>', 'Summon<~>', 'Prophet<~>', 'Crown<~>']"]),
         );
         // 阴金木水火土 + 阳金木水火土
-        let horn_vec = trait_schema!(
+        let horn = TraitSchema::new(
+            "Horn",
+            ArgsType::String,
+            6,
             1,
-            StringVec,
-            vec!["(%wuxing_yinyang):['Praetorian Horn', 'Hel Horn', 'Lethe Horn', 'Necromancer Horn', 'Lao Tsu Horn', 'Warrior Horn', 'Shaman Horn', 'Bard Horn', 'Sibyl Horn', 'Caesar Horn']"]
+            Pattern::Options,
+            Some(vec!["(%wuxing_yinyang):['Praetorian Horn', 'Hel Horn', 'Lethe Horn', 'Necromancer Horn', 'Lao Tsu Horn', 'Warrior Horn', 'Shaman Horn', 'Bard Horn', 'Sibyl Horn', 'Caesar Horn']"]),
         );
         // 随机
-        let wings_vec = trait_schema!(
+        let wings = TraitSchema::new(
+            "Wings",
+            ArgsType::String,
+            7,
             1,
-            StringVec,
-            vec![
+            Pattern::Options,
+            Some(vec![
                 "Wind Wings",
                 "Night Shadow Wings",
                 "Lightning Wings",
@@ -254,13 +102,16 @@ mod test {
                 "Spring Wings",
                 "Moon Wings",
                 "Angel Wings",
-            ]
+            ]),
         );
         // 随机
-        let tail_vec = trait_schema!(
+        let tail = TraitSchema::new(
+            "Tail",
+            ArgsType::String,
+            8,
             1,
-            StringVec,
-            vec![
+            Pattern::Options,
+            Some(vec![
                 "Meteor Tail",
                 "Rainbow Tail",
                 "Willow Tail",
@@ -269,14 +120,17 @@ mod test {
                 "Socrates Tail",
                 "Dumbledore Tail",
                 "Venus Tail",
-                "Gaia Tail"
-            ]
+                "Gaia Tail",
+            ]),
         );
         // 随机
-        let horseshoes_vec = trait_schema!(
+        let horseshoes = TraitSchema::new(
+            "Horseshoes",
+            ArgsType::String,
+            9,
             1,
-            StringVec,
-            vec![
+            Pattern::Options,
+            Some(vec![
                 "Ice Horseshoes",
                 "Crystal Horseshoes",
                 "Maple Horseshoes",
@@ -284,28 +138,42 @@ mod test {
                 "Thunder Horseshoes",
                 "Lotus Horseshoes",
                 "Silver Horseshoes",
-            ]
+            ]),
         );
         // 随机
-        let destiny_number_range = trait_schema!(4, NumberRange, (50000, 100000));
+        let destiny_number = TraitSchema::new(
+            "Destiny Number",
+            ArgsType::Number,
+            10,
+            4,
+            Pattern::Range,
+            Some(vec!["50000", "100000"]),
+        );
         // 随机
-        let lucky_number_range = trait_schema!(1, NumberRange, (1, 49));
+        let lucky_number = TraitSchema::new(
+            "Lucky Number",
+            ArgsType::Number,
+            14,
+            1,
+            Pattern::Range,
+            Some(vec!["1", "49"]),
+        );
 
         // this traits pattern should require at least 16 bytes length of DNA
-        let traits_base = TraitsBase::new_builder()
-            .push(trait_pool!("wuxing_yinyang", wuxing_yinyang_vec))
-            .push(trait_pool!("prev.bgcolor", prev_bgcolor_vec))
-            .push(trait_pool!("prev<%v>", prev_vec))
-            .push(trait_pool!("Spirits", spirits_vec))
-            .push(trait_pool!("Yin Yang", yinyang_vec))
-            .push(trait_pool!("Talents", talents_vec))
-            .push(trait_pool!("Horn", horn_vec))
-            .push(trait_pool!("Wings", wings_vec))
-            .push(trait_pool!("Tails", tail_vec))
-            .push(trait_pool!("Horseshoes", horseshoes_vec))
-            .push(trait_pool!("Destiny Number", destiny_number_range))
-            .push(trait_pool!("Lucky Number", lucky_number_range))
-            .build();
+        let traits_base = vec![
+            wuxing_yinyang,
+            prev_bgcolor,
+            prev,
+            spirits,
+            yinyang,
+            talents,
+            horn,
+            wings,
+            tail,
+            horseshoes,
+            destiny_number,
+            lucky_number,
+        ];
 
         let block_number = 12559090u64;
         let cell_id = {
@@ -336,8 +204,9 @@ mod test {
         println!("block_number = {block_number}\n");
         println!("cell_id = {cell_id}\n");
         println!(
-            "hexed_trats_base = {}\n",
-            hex::encode(traits_base.as_slice())
+            "trats_base = {}\n",
+            serde_json::to_string(&traits_base.iter().map(|v| v.encode()).collect::<Vec<_>>())
+                .expect("strinify traits_base")
         );
 
         let dna_traits = dobs_decode(Parameters {
@@ -347,16 +216,27 @@ mod test {
         .map_err(|error| format!("error code = {}", error as u64))
         .unwrap();
 
-        println!("{}", String::from_utf8_lossy(&dna_traits));
+        let render_result = String::from_utf8_lossy(&dna_traits).to_string();
+        assert_eq!(render_result, EXPECTED_UNICORN_RENDER_RESULT);
     }
 
     #[test]
     fn test_dna_decode_nervape() {
-        let prev_type_vec = trait_schema!(1, StringVec, vec!["image"]);
-        let prev_bg_vec = trait_schema!(
+        let prev_type = TraitSchema::new(
+            "prev.type",
+            ArgsType::String,
+            0,
             1,
-            StringVec,
-            vec![
+            Pattern::Options,
+            Some(vec!["image"]),
+        );
+        let prev_bg = TraitSchema::new(
+            "prev.bg",
+            ArgsType::String,
+            1,
+            1,
+            Pattern::Options,
+            Some(vec![
                 "btcfs://1bc24351a0df2e686574cd1b6346a1f55f81cff0a2e52078a6e3ad0a35cfb833i0",
                 "btcfs://64f562d16e2a4a29e8c4821370fff473edfa22c26ef5808adb2404e39dc013e5i0",
                 "btcfs://c29fecd6d7d7eec0cb3a2b3dfdcb6aa26081db8f9851110b7c20a0f3c617299ai0",
@@ -370,37 +250,50 @@ mod test {
                 "btcfs://aa8986f0ef667807d4b23970e64844dde3f0622542b79a5c302539de0c35b31ei0",
                 "btcfs://100f7e0f0965dc54515a3831a320881315cf5ca64ad01bed2b422616b15fd314i0",
                 "btcfs://b84ec0c770aa1961a3d9498ea8a67e1282532913fc1c13e3eaf5a48de2164fb9i0",
-                "btcfs://a06ba2e1614a5099176e5cc4d95de76cbeb4705a8bd7e142336278ebc290fdb3i0"
-            ]
+                "btcfs://a06ba2e1614a5099176e5cc4d95de76cbeb4705a8bd7e142336278ebc290fdb3i0",
+            ]),
         );
-        let prev_bgcolor_vec = trait_schema!(
+        let prev_bgcolor = TraitSchema::new(
+            "prev.bgcolor",
+            ArgsType::String,
+            2,
             1,
-            StringVec,
-            vec![
+            Pattern::Options,
+            Some(vec![
                 "#FFE3EB", "#FFC2FE", "#CEBAF7", "#B7E6F9", "#ABF4D0", "#E0DFBD", "#F9F7A7",
-                "#E2BE91", "#F9C662", "#F7D6B2", "#FCA863", "#F9ACAC", "#E0E1E2", "#A3A7AA"
-            ]
+                "#E2BE91", "#F9C662", "#F7D6B2", "#FCA863", "#F9ACAC", "#E0E1E2", "#A3A7AA",
+            ]),
         );
-        let number_range = trait_schema!(1, NumberRange, (0, 255));
+        let other_traits = [
+            "Background",
+            "Suit",
+            "Upper body",
+            "Lower body",
+            "Headwear",
+            "Mask",
+            "Eyewear",
+            "Mouth",
+            "Ears",
+            "Tattoo",
+            "Accessory",
+            "Handheld",
+            "Special",
+        ]
+        .into_iter()
+        .enumerate()
+        .map(|(i, name)| {
+            TraitSchema::new(
+                name,
+                ArgsType::Number,
+                3 + i as u64,
+                1,
+                Pattern::Range,
+                Some(vec!["0", "255"]),
+            )
+        })
+        .collect();
 
-        let traits_base = TraitsBase::new_builder()
-            .push(trait_pool!("prev.type", prev_type_vec))
-            .push(trait_pool!("prev.bg", prev_bg_vec))
-            .push(trait_pool!("prev.bgcolor", prev_bgcolor_vec))
-            .push(trait_pool!("Background", number_range.clone()))
-            .push(trait_pool!("Suit", number_range.clone()))
-            .push(trait_pool!("Upper body", number_range.clone()))
-            .push(trait_pool!("Lower body", number_range.clone()))
-            .push(trait_pool!("Headwear", number_range.clone()))
-            .push(trait_pool!("Mask", number_range.clone()))
-            .push(trait_pool!("Eyewear", number_range.clone()))
-            .push(trait_pool!("Mouth", number_range.clone()))
-            .push(trait_pool!("Ears", number_range.clone()))
-            .push(trait_pool!("Tattoo", number_range.clone()))
-            .push(trait_pool!("Accessory", number_range.clone()))
-            .push(trait_pool!("Handheld", number_range.clone()))
-            .push(trait_pool!("Special", number_range))
-            .build();
+        let traits_base = vec![vec![prev_type, prev_bg, prev_bgcolor], other_traits].concat();
 
         let btc_block_number = 834293u64;
         let token_id = 1459u16;
@@ -419,8 +312,9 @@ mod test {
 
         println!("hexed_nervape_dna = {}\n", hex::encode(&nervape_dna));
         println!(
-            "hexed_trats_base = {}\n",
-            hex::encode(traits_base.as_slice())
+            "trats_base = {}\n",
+            serde_json::to_string(&traits_base.iter().map(|v| v.encode()).collect::<Vec<_>>())
+                .expect("strinify traits_base")
         );
 
         let dna_traits = dobs_decode(Parameters {
@@ -430,6 +324,7 @@ mod test {
         .map_err(|error| format!("error code = {}", error as u64))
         .unwrap();
 
-        println!("{}", String::from_utf8_lossy(&dna_traits));
+        let render_result = String::from_utf8_lossy(&dna_traits).to_string();
+        assert_eq!(render_result, EXPECTED_NERVAPE_RENDER_RESULT);
     }
 }
