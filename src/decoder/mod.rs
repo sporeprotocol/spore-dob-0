@@ -83,7 +83,7 @@ pub fn dobs_decode(parameters: Parameters) -> Result<Vec<u8>, Error> {
                 let upperbound = args[1]
                     .parse::<u64>()
                     .map_err(|_| Error::DecodeInvalidRangeArgs)?;
-                if upperbound < lowerbound {
+                if upperbound <= lowerbound {
                     return Err(Error::DecodeInvalidRangeArgs);
                 }
                 let offset = offset % (upperbound - lowerbound);

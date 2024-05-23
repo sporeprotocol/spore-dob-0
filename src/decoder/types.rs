@@ -109,7 +109,14 @@ impl TraitSchema {
                 Pattern::Raw => "raw".to_owned(),
             }),
             match &self.args {
-                Some(args) => Value::Array(args.iter().map(|v| Value::String(v.clone())).collect()),
+                Some(args) => Value::Array(
+                    args.iter()
+                        .map(|v| match self.type_ {
+                            ArgsType::String => Value::String(v.clone()),
+                            ArgsType::Number => Value::Number(v.parse::<u64>().unwrap().into()),
+                        })
+                        .collect(),
+                ),
                 None => Value::Null,
             },
         ]
@@ -131,10 +138,11 @@ pub fn decode_trait_schema(traits_pool: Vec<Vec<Value>>) -> Result<Vec<TraitSche
             };
             let offset = schema[2].as_u64().ok_or(Error::SchemaInvalidOffset)?;
             let len = schema[3].as_u64().ok_or(Error::SchemaInvalidLen)?;
-            let pattern = match schema[4].as_str().ok_or(Error::SchemaInvalidPattern)? {
-                "options" => Pattern::Options,
-                "range" => Pattern::Range,
-                "raw" => Pattern::Raw,
+            let pattern_str = schema[4].as_str().ok_or(Error::SchemaInvalidPattern)?;
+            let pattern = match (pattern_str, &type_) {
+                ("options", _) => Pattern::Options,
+                ("range", ArgsType::Number) => Pattern::Range,
+                ("raw", ArgsType::Number) => Pattern::Raw,
                 _ => return Err(Error::SchemaPatternMismatch),
             };
             let args = if let Some(args) = schema.get(5) {
@@ -143,6 +151,9 @@ pub fn decode_trait_schema(traits_pool: Vec<Vec<Value>>) -> Result<Vec<TraitSche
                     .ok_or(Error::SchemaInvalidArgs)?
                     .iter()
                     .map(|value| {
+                        if type_ == ArgsType::Number && !value.is_number() {
+                            return Err(Error::SchemaInvalidArgs);
+                        }
                         value
                             .as_str()
                             .ok_or(Error::SchemaInvalidArgs)
