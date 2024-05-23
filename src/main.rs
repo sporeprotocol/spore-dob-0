@@ -4,7 +4,6 @@ use core::ffi::CStr;
 
 extern crate alloc;
 mod decoder;
-mod schema;
 
 #[no_mangle]
 unsafe extern "C" fn main(argc: u64, argv: *const *const i8) {
