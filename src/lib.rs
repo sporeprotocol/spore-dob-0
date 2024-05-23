@@ -9,12 +9,51 @@ mod test {
     use ckb_types::h256;
 
     use crate::decoder::{
-        dobs_decode,
+        dobs_decode, dobs_parse_parameters,
         types::{ArgsType, Parameters, Pattern, TraitSchema},
     };
 
     const EXPECTED_UNICORN_RENDER_RESULT: &str = "[{\"name\":\"wuxing_yinyang\",\"traits\":[{\"String\":\"3<_>\"}]},{\"name\":\"prev.bgcolor\",\"traits\":[{\"String\":\"(%wuxing_yinyang):['#DBAB00', '#09D3FF', '#A028E9', '#FF3939', '#(135deg, #FE4F4F, #66C084, #00E2E2, #E180E2, #F4EC32)']\"}]},{\"name\":\"prev<%v>\",\"traits\":[{\"String\":\"(%wuxing_yinyang):['#000000', '#000000', '#000000', '#000000', '#000000', '#FFFFFF', '#FFFFFF', '#FFFFFF', '#FFFFFF', '#FFFFFF'])\"}]},{\"name\":\"Spirits\",\"traits\":[{\"String\":\"(%wuxing_yinyang):['Metal, Golden Body', 'Wood, Blue Body', 'Water, White Body', 'Fire, Red Body', 'Earth, Colorful Body']\"}]},{\"name\":\"Yin Yang\",\"traits\":[{\"String\":\"(%wuxing_yinyang):['Yin, Long hair', 'Yin, Long hair', 'Yin, Long hair', 'Yin, Long hair', 'Yin, Long hair', 'Yang, Short Hair', 'Yang, Short Hair', 'Yang, Short Hair', 'Yang, Short Hair', 'Yang, Short Hair']\"}]},{\"name\":\"Talents\",\"traits\":[{\"String\":\"(%wuxing_yinyang):['Guard<~>', 'Death<~>', 'Forget<~>', 'Curse<~>', 'Hermit<~>', 'Attack<~>', 'Revival<~>', 'Summon<~>', 'Prophet<~>', 'Crown<~>']\"}]},{\"name\":\"Horn\",\"traits\":[{\"String\":\"(%wuxing_yinyang):['Praetorian Horn', 'Hel Horn', 'Lethe Horn', 'Necromancer Horn', 'Lao Tsu Horn', 'Warrior Horn', 'Shaman Horn', 'Bard Horn', 'Sibyl Horn', 'Caesar Horn']\"}]},{\"name\":\"Wings\",\"traits\":[{\"String\":\"Sun Wings\"}]},{\"name\":\"Tail\",\"traits\":[{\"String\":\"Meteor Tail\"}]},{\"name\":\"Horseshoes\",\"traits\":[{\"String\":\"Silver Horseshoes\"}]},{\"name\":\"Destiny Number\",\"traits\":[{\"Number\":65321}]},{\"name\":\"Lucky Number\",\"traits\":[{\"Number\":35}]}]";
     const EXPECTED_NERVAPE_RENDER_RESULT: &str = "[{\"name\":\"prev.type\",\"traits\":[{\"String\":\"image\"}]},{\"name\":\"prev.bg\",\"traits\":[{\"String\":\"btcfs://59e87ca177ef0fd457e87e9f93627660022cf519b531e1f4e3a6dda9e5e33827i0\"}]},{\"name\":\"prev.bgcolor\",\"traits\":[{\"String\":\"#CEBAF7\"}]},{\"name\":\"Background\",\"traits\":[{\"Number\":170}]},{\"name\":\"Suit\",\"traits\":[{\"Number\":236}]},{\"name\":\"Upper body\",\"traits\":[{\"Number\":53}]},{\"name\":\"Lower body\",\"traits\":[{\"Number\":189}]},{\"name\":\"Headwear\",\"traits\":[{\"Number\":175}]},{\"name\":\"Mask\",\"traits\":[{\"Number\":153}]},{\"name\":\"Eyewear\",\"traits\":[{\"Number\":126}]},{\"name\":\"Mouth\",\"traits\":[{\"Number\":14}]},{\"name\":\"Ears\",\"traits\":[{\"Number\":165}]},{\"name\":\"Tattoo\",\"traits\":[{\"Number\":231}]},{\"name\":\"Accessory\",\"traits\":[{\"Number\":78}]},{\"name\":\"Handheld\",\"traits\":[{\"Number\":240}]},{\"name\":\"Special\",\"traits\":[{\"Number\":70}]}]";
+
+    #[test]
+    fn test_generate_basic_example() {
+        let character_name = TraitSchema::new(
+            "Name",
+            ArgsType::String,
+            0,
+            1,
+            Pattern::Options,
+            Some(vec![
+                "Alice", "Bob", "Charlie", "David", "Ethan", "Florence", "Grace", "Helen",
+            ]),
+        );
+        let character_age = TraitSchema::new(
+            "Age",
+            ArgsType::Number,
+            1,
+            1,
+            Pattern::Range,
+            Some(vec!["0", "100"]),
+        );
+        let test_score = TraitSchema::new("Score", ArgsType::Number, 2, 1, Pattern::Raw, None);
+
+        let schemas = vec![character_name, character_age, test_score];
+        let traits_base =
+            serde_json::to_string(&schemas.iter().map(|v| v.encode()).collect::<Vec<_>>())
+                .expect("stringify traits_base");
+        println!("trats_base = {traits_base}\n");
+
+        let spore_dna = "ac7b88";
+        let parameters = dobs_parse_parameters(vec![spore_dna.as_bytes(), traits_base.as_bytes()])
+            .expect("parse parameters");
+
+        let dna_traits = dobs_decode(parameters)
+            .map_err(|error| format!("error code = {}", error as u64))
+            .unwrap();
+
+        println!("dna_traits = {}\n", String::from_utf8_lossy(&dna_traits));
+    }
 
     #[test]
     fn test_dna_decode_unicorn() {
@@ -206,7 +245,7 @@ mod test {
         println!(
             "trats_base = {}\n",
             serde_json::to_string(&traits_base.iter().map(|v| v.encode()).collect::<Vec<_>>())
-                .expect("strinify traits_base")
+                .expect("stringify traits_base")
         );
 
         let dna_traits = dobs_decode(Parameters {
@@ -314,7 +353,7 @@ mod test {
         println!(
             "trats_base = {}\n",
             serde_json::to_string(&traits_base.iter().map(|v| v.encode()).collect::<Vec<_>>())
-                .expect("strinify traits_base")
+                .expect("stringify traits_base")
         );
 
         let dna_traits = dobs_decode(Parameters {

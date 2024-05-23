@@ -1,9 +1,8 @@
-use alloc::borrow::ToOwned;
-use alloc::string::String;
-use alloc::vec::Vec;
+use alloc::{borrow::ToOwned, format, string::String, vec::Vec};
 use serde_json::Value;
 
 #[repr(u64)]
+#[cfg_attr(test, derive(Debug))]
 pub enum Error {
     ParseInvalidArgCount = 1,
     ParseInvalidSporeDNA,
@@ -18,6 +17,7 @@ pub enum Error {
     SchemaInvalidPattern,
     SchemaPatternMismatch,
     SchemaInvalidArgs,
+    SchemaInvalidArgsElement,
 
     DecodeInsufficientSporeDNA,
     DecodeUnexpectedDNASegment,
@@ -95,7 +95,7 @@ impl TraitSchema {
 
     #[allow(dead_code)]
     pub fn encode(&self) -> Vec<Value> {
-        vec![
+        let mut values = vec![
             Value::String(self.name.clone()),
             Value::String(match self.type_ {
                 ArgsType::String => "string".to_owned(),
@@ -108,18 +108,17 @@ impl TraitSchema {
                 Pattern::Range => "range".to_owned(),
                 Pattern::Raw => "raw".to_owned(),
             }),
-            match &self.args {
-                Some(args) => Value::Array(
-                    args.iter()
-                        .map(|v| match self.type_ {
-                            ArgsType::String => Value::String(v.clone()),
-                            ArgsType::Number => Value::Number(v.parse::<u64>().unwrap().into()),
-                        })
-                        .collect(),
-                ),
-                None => Value::Null,
-            },
-        ]
+        ];
+        if let Some(args) = &self.args {
+            values.push(Value::Array(match self.type_ {
+                ArgsType::String => args.iter().map(|v| Value::String(v.clone())).collect(),
+                ArgsType::Number => args
+                    .iter()
+                    .map(|v| Value::Number(v.parse().unwrap()))
+                    .collect(),
+            }));
+        }
+        values
     }
 }
 
@@ -151,13 +150,17 @@ pub fn decode_trait_schema(traits_pool: Vec<Vec<Value>>) -> Result<Vec<TraitSche
                     .ok_or(Error::SchemaInvalidArgs)?
                     .iter()
                     .map(|value| {
-                        if type_ == ArgsType::Number && !value.is_number() {
-                            return Err(Error::SchemaInvalidArgs);
+                        if value.is_string() {
+                            value
+                                .as_str()
+                                .ok_or(Error::SchemaInvalidArgsElement)
+                                .map(ToOwned::to_owned)
+                        } else {
+                            Ok(format!(
+                                "{}",
+                                value.as_u64().ok_or(Error::SchemaInvalidArgsElement)?
+                            ))
                         }
-                        value
-                            .as_str()
-                            .ok_or(Error::SchemaInvalidArgs)
-                            .map(ToOwned::to_owned)
                     })
                     .collect::<Result<Vec<_>, _>>()?;
                 Some(args)

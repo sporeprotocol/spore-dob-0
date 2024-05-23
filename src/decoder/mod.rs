@@ -23,12 +23,8 @@ pub fn dobs_parse_parameters(args: Vec<&[u8]>) -> Result<Parameters, Error> {
     };
     let traits_base = {
         let value = args[1];
-        if value.len() % 2 != 0 {
-            return Err(Error::ParseInvalidTraitsBase);
-        }
-        let traits = hex::decode(value).map_err(|_| Error::ParseInvalidTraitsBase)?;
         let traits_pool: Vec<Vec<Value>> =
-            serde_json::from_slice(&traits).map_err(|_| Error::ParseInvalidTraitsBase)?;
+            serde_json::from_slice(value).map_err(|_| Error::ParseInvalidTraitsBase)?;
         decode_trait_schema(traits_pool)?
     };
     Ok(Parameters {
