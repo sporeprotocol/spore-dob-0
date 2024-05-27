@@ -18,7 +18,7 @@ mod test {
 
     #[test]
     fn test_generate_basic_example() {
-        let character_name = TraitSchema::new(
+        let name = TraitSchema::new(
             "Name",
             ArgsType::String,
             0,
@@ -28,7 +28,7 @@ mod test {
                 "Alice", "Bob", "Charlie", "David", "Ethan", "Florence", "Grace", "Helen",
             ]),
         );
-        let character_age = TraitSchema::new(
+        let age = TraitSchema::new(
             "Age",
             ArgsType::Number,
             1,
@@ -36,11 +36,12 @@ mod test {
             Pattern::Range,
             Some(vec!["0", "100"]),
         );
-        let test_score = TraitSchema::new("Score", ArgsType::Number, 2, 1, Pattern::Raw, None);
-        let plain_hex = TraitSchema::new("DNA", ArgsType::String, 3, 3, Pattern::Raw, None);
+        let score = TraitSchema::new("Score", ArgsType::Number, 2, 1, Pattern::Raw, None);
+        let dna = TraitSchema::new("DNA", ArgsType::String, 3, 3, Pattern::Raw, None);
         let url = TraitSchema::new("URL", ArgsType::String, 6, 21, Pattern::Utf8, None);
+        let value = TraitSchema::new("Value", ArgsType::Number, 3, 3, Pattern::Raw, None);
 
-        let schemas = vec![character_name, character_age, test_score, plain_hex, url];
+        let schemas = vec![name, age, score, dna, url, value];
         let traits_base =
             serde_json::to_string(&schemas.iter().map(|v| v.encode()).collect::<Vec<_>>())
                 .expect("stringify traits_base");

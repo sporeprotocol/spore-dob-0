@@ -1,4 +1,4 @@
-use alloc::{string::String, vec::Vec};
+use alloc::{format, string::String, vec::Vec};
 
 pub mod types;
 use serde_json::Value;
@@ -51,22 +51,35 @@ pub fn dobs_decode(parameters: Parameters) -> Result<Vec<u8>, Error> {
             return Err(Error::DecodeInsufficientSporeDNA);
         }
         let mut dna_segment = spore_dna[byte_offset..byte_offset + byte_length].to_vec();
-        let offset = match dna_segment.len() {
-            1 => Some(dna_segment[0] as u64),
-            2 => Some(u16::from_le_bytes(dna_segment.clone().try_into().unwrap()) as u64),
-            4 => Some(u32::from_le_bytes(dna_segment.clone().try_into().unwrap()) as u64),
-            8 => Some(u64::from_le_bytes(dna_segment.clone().try_into().unwrap())),
-            _ => None,
+        let parse_u64 = |dna_segment: Vec<u8>| {
+            let offset = match dna_segment.len() {
+                1 => dna_segment[0] as u64,
+                2 => u16::from_le_bytes(dna_segment.clone().try_into().unwrap()) as u64,
+                3 | 4 => {
+                    let mut buf = [0u8; 4];
+                    buf[..dna_segment.len()].copy_from_slice(&dna_segment);
+                    u32::from_le_bytes(buf) as u64
+                }
+                5..=8 => {
+                    let mut buf = [0u8; 8];
+                    buf[..dna_segment.len()].copy_from_slice(&dna_segment);
+                    u64::from_le_bytes(buf)
+                }
+                _ => return Err(Error::DecodeUnexpectedDNASegment),
+            };
+            Ok(offset)
         };
         match schema_base.pattern {
             Pattern::Raw => match schema_base.type_ {
                 ArgsType::Number => {
-                    let value = offset.ok_or(Error::DecodeUnexpectedDNASegment)?;
+                    let value = parse_u64(dna_segment)?;
                     parsed_dna.traits.push(ParsedTrait::Number(value));
                 }
                 ArgsType::String => {
                     let value = hex::encode(&dna_segment);
-                    parsed_dna.traits.push(ParsedTrait::String(value));
+                    parsed_dna
+                        .traits
+                        .push(ParsedTrait::String(format!("0x{value}")));
                 }
             },
             Pattern::Utf8 => {
@@ -97,7 +110,7 @@ pub fn dobs_decode(parameters: Parameters) -> Result<Vec<u8>, Error> {
                 if upperbound <= lowerbound {
                     return Err(Error::DecodeInvalidRangeArgs);
                 }
-                let offset = offset.ok_or(Error::DecodeUnexpectedDNASegment)?;
+                let offset = parse_u64(dna_segment)?;
                 let offset = offset % (upperbound - lowerbound);
                 parsed_dna
                     .traits
@@ -108,8 +121,8 @@ pub fn dobs_decode(parameters: Parameters) -> Result<Vec<u8>, Error> {
                 if args.is_empty() {
                     return Err(Error::DecodeInvalidOptionArgs);
                 }
-                let offset = offset.ok_or(Error::DecodeUnexpectedDNASegment)? as usize;
-                let offset = offset % args.len();
+                let offset = parse_u64(dna_segment)?;
+                let offset = offset as usize % args.len();
                 match schema_base.type_ {
                     ArgsType::String => {
                         let value = args[offset].clone();
