@@ -26,6 +26,7 @@ pub enum Error {
     DecodeInvalidRangeArgs,
     DecodeMissingOptionArgs,
     DecodeInvalidOptionArgs,
+    DecodeBadUTF8Format,
 }
 
 #[derive(serde::Serialize)]
@@ -59,6 +60,7 @@ pub enum Pattern {
     Options,
     Range,
     Raw,
+    Utf8,
 }
 
 #[cfg_attr(test, derive(serde::Serialize, Clone))]
@@ -107,6 +109,7 @@ impl TraitSchema {
                 Pattern::Options => "options".to_owned(),
                 Pattern::Range => "range".to_owned(),
                 Pattern::Raw => "raw".to_owned(),
+                Pattern::Utf8 => "utf8".to_owned(),
             }),
         ];
         if let Some(args) = &self.args {
@@ -140,8 +143,9 @@ pub fn decode_trait_schema(traits_pool: Vec<Vec<Value>>) -> Result<Vec<TraitSche
             let pattern_str = schema[4].as_str().ok_or(Error::SchemaInvalidPattern)?;
             let pattern = match (pattern_str, &type_) {
                 ("options", _) => Pattern::Options,
+                ("raw", _) => Pattern::Raw,
+                ("utf8", ArgsType::String) => Pattern::Utf8,
                 ("range", ArgsType::Number) => Pattern::Range,
-                ("raw", ArgsType::Number) => Pattern::Raw,
                 _ => return Err(Error::SchemaPatternMismatch),
             };
             let args = if let Some(args) = schema.get(5) {

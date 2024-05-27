@@ -37,14 +37,16 @@ mod test {
             Some(vec!["0", "100"]),
         );
         let test_score = TraitSchema::new("Score", ArgsType::Number, 2, 1, Pattern::Raw, None);
+        let plain_hex = TraitSchema::new("DNA", ArgsType::String, 3, 3, Pattern::Raw, None);
+        let url = TraitSchema::new("URL", ArgsType::String, 6, 21, Pattern::Utf8, None);
 
-        let schemas = vec![character_name, character_age, test_score];
+        let schemas = vec![character_name, character_age, test_score, plain_hex, url];
         let traits_base =
             serde_json::to_string(&schemas.iter().map(|v| v.encode()).collect::<Vec<_>>())
                 .expect("stringify traits_base");
         println!("trats_base = {traits_base}\n");
 
-        let spore_dna = "ac7b88";
+        let spore_dna = "ac7b88aabbcc687474703a2f2f3132372e302e302e313a38303930";
         let parameters = dobs_parse_parameters(vec![spore_dna.as_bytes(), traits_base.as_bytes()])
             .expect("parse parameters");
 
