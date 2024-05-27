@@ -51,24 +51,6 @@ pub fn dobs_decode(parameters: Parameters) -> Result<Vec<u8>, Error> {
             return Err(Error::DecodeInsufficientSporeDNA);
         }
         let mut dna_segment = spore_dna[byte_offset..byte_offset + byte_length].to_vec();
-        let parse_u64 = |dna_segment: Vec<u8>| {
-            let offset = match dna_segment.len() {
-                1 => dna_segment[0] as u64,
-                2 => u16::from_le_bytes(dna_segment.clone().try_into().unwrap()) as u64,
-                3 | 4 => {
-                    let mut buf = [0u8; 4];
-                    buf[..dna_segment.len()].copy_from_slice(&dna_segment);
-                    u32::from_le_bytes(buf) as u64
-                }
-                5..=8 => {
-                    let mut buf = [0u8; 8];
-                    buf[..dna_segment.len()].copy_from_slice(&dna_segment);
-                    u64::from_le_bytes(buf)
-                }
-                _ => return Err(Error::DecodeUnexpectedDNASegment),
-            };
-            Ok(offset)
-        };
         match schema_base.pattern {
             Pattern::Raw => match schema_base.type_ {
                 ArgsType::Number => {
@@ -141,4 +123,23 @@ pub fn dobs_decode(parameters: Parameters) -> Result<Vec<u8>, Error> {
     }
 
     Ok(serde_json::to_string(&result).unwrap().into_bytes())
+}
+
+fn parse_u64(dna_segment: Vec<u8>) -> Result<u64, Error> {
+    let offset = match dna_segment.len() {
+        1 => dna_segment[0] as u64,
+        2 => u16::from_le_bytes(dna_segment.clone().try_into().unwrap()) as u64,
+        3 | 4 => {
+            let mut buf = [0u8; 4];
+            buf[..dna_segment.len()].copy_from_slice(&dna_segment);
+            u32::from_le_bytes(buf) as u64
+        }
+        5..=8 => {
+            let mut buf = [0u8; 8];
+            buf[..dna_segment.len()].copy_from_slice(&dna_segment);
+            u64::from_le_bytes(buf)
+        }
+        _ => return Err(Error::DecodeUnexpectedDNASegment),
+    };
+    Ok(offset)
 }
