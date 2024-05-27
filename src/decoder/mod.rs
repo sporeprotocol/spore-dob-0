@@ -1,4 +1,4 @@
-use alloc::vec::Vec;
+use alloc::{format, string::String, vec::Vec};
 
 pub mod types;
 use serde_json::Value;
@@ -50,20 +50,30 @@ pub fn dobs_decode(parameters: Parameters) -> Result<Vec<u8>, Error> {
         if spore_dna.len() < byte_offset + byte_length {
             return Err(Error::DecodeInsufficientSporeDNA);
         }
-        let dna_segment = spore_dna[byte_offset..byte_offset + byte_length].to_vec();
-        let offset = match dna_segment.len() {
-            1 => dna_segment[0] as u64,
-            2 => u16::from_le_bytes(dna_segment.try_into().unwrap()) as u64,
-            4 => u32::from_le_bytes(dna_segment.try_into().unwrap()) as u64,
-            8 => u64::from_le_bytes(dna_segment.try_into().unwrap()),
-            _ => return Err(Error::DecodeUnexpectedDNASegment),
-        };
+        let mut dna_segment = spore_dna[byte_offset..byte_offset + byte_length].to_vec();
         match schema_base.pattern {
-            Pattern::Raw => {
-                if schema_base.type_ != ArgsType::Number {
+            Pattern::Raw => match schema_base.type_ {
+                ArgsType::Number => {
+                    let value = parse_u64(dna_segment)?;
+                    parsed_dna.traits.push(ParsedTrait::Number(value));
+                }
+                ArgsType::String => {
+                    let value = hex::encode(&dna_segment);
+                    parsed_dna
+                        .traits
+                        .push(ParsedTrait::String(format!("0x{value}")));
+                }
+            },
+            Pattern::Utf8 => {
+                if schema_base.type_ != ArgsType::String {
                     return Err(Error::DecodeArgsTypeMismatch);
                 }
-                parsed_dna.traits.push(ParsedTrait::Number(offset));
+                while dna_segment.last() == Some(&0) {
+                    dna_segment.pop();
+                }
+                let value =
+                    String::from_utf8(dna_segment).map_err(|_| Error::DecodeBadUTF8Format)?;
+                parsed_dna.traits.push(ParsedTrait::String(value));
             }
             Pattern::Range => {
                 let args = schema_base.args.ok_or(Error::DecodeMissingRangeArgs)?;
@@ -82,6 +92,7 @@ pub fn dobs_decode(parameters: Parameters) -> Result<Vec<u8>, Error> {
                 if upperbound <= lowerbound {
                     return Err(Error::DecodeInvalidRangeArgs);
                 }
+                let offset = parse_u64(dna_segment)?;
                 let offset = offset % (upperbound - lowerbound);
                 parsed_dna
                     .traits
@@ -92,6 +103,7 @@ pub fn dobs_decode(parameters: Parameters) -> Result<Vec<u8>, Error> {
                 if args.is_empty() {
                     return Err(Error::DecodeInvalidOptionArgs);
                 }
+                let offset = parse_u64(dna_segment)?;
                 let offset = offset as usize % args.len();
                 match schema_base.type_ {
                     ArgsType::String => {
@@ -111,4 +123,23 @@ pub fn dobs_decode(parameters: Parameters) -> Result<Vec<u8>, Error> {
     }
 
     Ok(serde_json::to_string(&result).unwrap().into_bytes())
+}
+
+fn parse_u64(dna_segment: Vec<u8>) -> Result<u64, Error> {
+    let offset = match dna_segment.len() {
+        1 => dna_segment[0] as u64,
+        2 => u16::from_le_bytes(dna_segment.clone().try_into().unwrap()) as u64,
+        3 | 4 => {
+            let mut buf = [0u8; 4];
+            buf[..dna_segment.len()].copy_from_slice(&dna_segment);
+            u32::from_le_bytes(buf) as u64
+        }
+        5..=8 => {
+            let mut buf = [0u8; 8];
+            buf[..dna_segment.len()].copy_from_slice(&dna_segment);
+            u64::from_le_bytes(buf)
+        }
+        _ => return Err(Error::DecodeUnexpectedDNASegment),
+    };
+    Ok(offset)
 }
