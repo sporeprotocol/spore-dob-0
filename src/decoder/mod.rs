@@ -1,3 +1,5 @@
+use core::cmp;
+
 use alloc::{format, string::String, vec::Vec};
 
 pub mod types;
@@ -46,11 +48,8 @@ pub fn dobs_decode(parameters: Parameters) -> Result<Vec<u8>, Error> {
             ..Default::default()
         };
         let byte_offset = schema_base.offset as usize;
-        let byte_length = schema_base.len as usize;
-        if spore_dna.len() < byte_offset + byte_length {
-            return Err(Error::DecodeInsufficientSporeDNA);
-        }
-        let mut dna_segment = spore_dna[byte_offset..byte_offset + byte_length].to_vec();
+        let byte_end = cmp::min(byte_offset + schema_base.len as usize, spore_dna.len());
+        let mut dna_segment = spore_dna[byte_offset..byte_end].to_vec();
         match schema_base.pattern {
             Pattern::Raw => match schema_base.type_ {
                 ArgsType::Number => {
