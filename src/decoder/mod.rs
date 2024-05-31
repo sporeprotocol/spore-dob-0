@@ -47,7 +47,7 @@ pub fn dobs_decode(parameters: Parameters) -> Result<Vec<u8>, Error> {
             name: schema_base.name,
             ..Default::default()
         };
-        let byte_offset = schema_base.offset as usize;
+        let byte_offset = cmp::min(schema_base.offset as usize, spore_dna.len());
         let byte_end = cmp::min(byte_offset + schema_base.len as usize, spore_dna.len());
         let mut dna_segment = spore_dna[byte_offset..byte_end].to_vec();
         match schema_base.pattern {
