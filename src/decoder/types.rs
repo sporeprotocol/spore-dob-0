@@ -19,7 +19,6 @@ pub enum Error {
     SchemaInvalidArgs,
     SchemaInvalidArgsElement,
 
-    DecodeInsufficientSporeDNA,
     DecodeUnexpectedDNASegment,
     DecodeArgsTypeMismatch,
     DecodeMissingRangeArgs,

@@ -38,7 +38,7 @@ mod test {
         );
         let score = TraitSchema::new("Score", ArgsType::Number, 2, 1, Pattern::Raw, None);
         let dna = TraitSchema::new("DNA", ArgsType::String, 3, 3, Pattern::Raw, None);
-        let url = TraitSchema::new("URL", ArgsType::String, 6, 21, Pattern::Utf8, None);
+        let url = TraitSchema::new("URL", ArgsType::String, 6, 30, Pattern::Utf8, None);
         let value = TraitSchema::new("Value", ArgsType::Number, 3, 3, Pattern::Raw, None);
 
         let schemas = vec![name, age, score, dna, url, value];
@@ -47,7 +47,7 @@ mod test {
                 .expect("stringify traits_base");
         println!("trats_base = {traits_base}\n");
 
-        let spore_dna = "ac7b88aabbcc687474703a2f2f3132372e302e302e313a38303930";
+        let spore_dna = "ac7b88aabbcc687474703a2f2f3132372e302e302e313a383039300000";
         let parameters = dobs_parse_parameters(vec![spore_dna.as_bytes(), traits_base.as_bytes()])
             .expect("parse parameters");
 
