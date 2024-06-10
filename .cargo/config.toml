@@ -1,0 +1,6 @@
+[alias]
+build-riscv = "build --target riscv64imac-unknown-none-elf"
+run-riscv = "run --target riscv64imac-unknown-none-elf"
+
+[target.riscv64imac-unknown-none-elf]
+runner = "ckb-vm-runner"
