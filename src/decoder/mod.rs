@@ -1,10 +1,10 @@
 use core::cmp;
 
-use alloc::{format, string::String, vec::Vec};
+use alloc::{string::String, vec::Vec};
 
 pub mod types;
 use serde_json::Value;
-use types::{ArgsType, Error, Parameters, ParsedDNA, ParsedTrait, Pattern};
+use types::{Error, Parameters, ParsedDNA, ParsedTrait, Pattern};
 
 use self::types::decode_trait_schema;
 
@@ -25,7 +25,7 @@ pub fn dobs_parse_parameters(args: Vec<&[u8]>) -> Result<Parameters, Error> {
     };
     let traits_base = {
         let value = args[1];
-        let traits_pool: Vec<Vec<Value>> =
+        let traits_pool: Value =
             serde_json::from_slice(value).map_err(|_| Error::ParseInvalidTraitsBase)?;
         decode_trait_schema(traits_pool)?
     };
@@ -50,52 +50,30 @@ pub fn dobs_decode(parameters: Parameters) -> Result<Vec<u8>, Error> {
         let byte_offset = cmp::min(schema_base.offset as usize, spore_dna.len());
         let byte_end = cmp::min(byte_offset + schema_base.len as usize, spore_dna.len());
         let mut dna_segment = spore_dna[byte_offset..byte_end].to_vec();
-        match schema_base.pattern {
-            Pattern::Raw => match schema_base.type_ {
-                ArgsType::Number => {
-                    let value = parse_u64(dna_segment)?;
-                    parsed_dna.traits.push(ParsedTrait::Number(value));
-                }
-                ArgsType::String => {
-                    let value = hex::encode(&dna_segment);
-                    parsed_dna
-                        .traits
-                        .push(ParsedTrait::String(format!("0x{value}")));
-                }
-            },
+        let value: Value = match schema_base.pattern {
+            Pattern::RawNumber => Value::Number(parse_u64(dna_segment)?.into()),
+            Pattern::RawString => Value::String(hex::encode(&dna_segment)),
             Pattern::Utf8 => {
-                if schema_base.type_ != ArgsType::String {
-                    return Err(Error::DecodeArgsTypeMismatch);
-                }
                 while dna_segment.last() == Some(&0) {
                     dna_segment.pop();
                 }
-                let value =
-                    String::from_utf8(dna_segment).map_err(|_| Error::DecodeBadUTF8Format)?;
-                parsed_dna.traits.push(ParsedTrait::String(value));
+                Value::String(
+                    String::from_utf8(dna_segment).map_err(|_| Error::DecodeBadUTF8Format)?,
+                )
             }
             Pattern::Range => {
                 let args = schema_base.args.ok_or(Error::DecodeMissingRangeArgs)?;
                 if args.len() != 2 {
                     return Err(Error::DecodeInvalidRangeArgs);
                 }
-                if schema_base.type_ != ArgsType::Number {
-                    return Err(Error::DecodeArgsTypeMismatch);
-                }
-                let lowerbound = args[0]
-                    .parse::<u64>()
-                    .map_err(|_| Error::DecodeInvalidRangeArgs)?;
-                let upperbound = args[1]
-                    .parse::<u64>()
-                    .map_err(|_| Error::DecodeInvalidRangeArgs)?;
-                if upperbound <= lowerbound {
+                let lower = args[0].as_u64().ok_or(Error::DecodeInvalidRangeArgs)?;
+                let upper = args[1].as_u64().ok_or(Error::DecodeInvalidRangeArgs)?;
+                if upper <= lower {
                     return Err(Error::DecodeInvalidRangeArgs);
                 }
                 let offset = parse_u64(dna_segment)?;
-                let offset = offset % (upperbound - lowerbound);
-                parsed_dna
-                    .traits
-                    .push(ParsedTrait::Number(lowerbound + offset));
+                let offset = offset % (upper - lower);
+                Value::Number((lower + offset).into())
             }
             Pattern::Options => {
                 let args = schema_base.args.ok_or(Error::DecodeMissingOptionArgs)?;
@@ -104,20 +82,13 @@ pub fn dobs_decode(parameters: Parameters) -> Result<Vec<u8>, Error> {
                 }
                 let offset = parse_u64(dna_segment)?;
                 let offset = offset as usize % args.len();
-                match schema_base.type_ {
-                    ArgsType::String => {
-                        let value = args[offset].clone();
-                        parsed_dna.traits.push(ParsedTrait::String(value));
-                    }
-                    ArgsType::Number => {
-                        let value = args[offset]
-                            .parse::<u64>()
-                            .map_err(|_| Error::DecodeInvalidOptionArgs)?;
-                        parsed_dna.traits.push(ParsedTrait::Number(value));
-                    }
-                }
+                args[offset].clone()
             }
-        }
+        };
+        parsed_dna.traits.push(ParsedTrait {
+            type_: schema_base.type_,
+            value,
+        });
         result.push(parsed_dna);
     }
 
