@@ -1,4 +1,5 @@
-use alloc::{borrow::ToOwned, format, string::String, vec::Vec};
+use alloc::{borrow::ToOwned, string::String, vec::Vec};
+use serde::{ser::SerializeMap, Serialize};
 use serde_json::Value;
 
 #[repr(u64)]
@@ -28,10 +29,22 @@ pub enum Error {
     DecodeBadUTF8Format,
 }
 
-#[derive(serde::Serialize)]
-pub enum ParsedTrait {
-    String(String),
-    Number(u64),
+pub struct ParsedTrait {
+    pub type_: String,
+    pub value: Value,
+}
+
+impl Serialize for ParsedTrait {
+    fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
+    where
+        S: serde::Serializer,
+    {
+        let mut map = serializer.serialize_map(Some(1))?;
+
+        map.serialize_entry(&self.type_, &self.value)?;
+
+        map.end()
+    }
 }
 
 #[derive(serde::Serialize, Default)]
@@ -47,18 +60,12 @@ pub struct Parameters {
 }
 
 #[cfg_attr(test, derive(serde::Serialize, Clone))]
-#[derive(serde::Deserialize, PartialEq, Eq)]
-pub enum ArgsType {
-    String,
-    Number,
-}
-
-#[cfg_attr(test, derive(serde::Serialize, Clone))]
 #[derive(serde::Deserialize)]
 pub enum Pattern {
     Options,
     Range,
-    Raw,
+    RawNumber,
+    RawString,
     Utf8,
 }
 
@@ -66,113 +73,88 @@ pub enum Pattern {
 #[derive(serde::Deserialize)]
 pub struct TraitSchema {
     pub name: String,
-    pub type_: ArgsType,
+    pub type_: String,
     pub offset: u64,
     pub len: u64,
     pub pattern: Pattern,
-    pub args: Option<Vec<String>>,
+    pub args: Option<Vec<Value>>,
 }
 
 #[cfg(test)]
 impl TraitSchema {
     #[allow(dead_code)]
     pub fn new(
-        name: &str,
-        type_: ArgsType,
+        name: String,
+        type_: String,
         offset: u64,
         len: u64,
         pattern: Pattern,
-        args: Option<Vec<&str>>,
+        args: Option<Vec<Value>>,
     ) -> Self {
         Self {
-            name: name.to_owned(),
+            name,
             type_,
             offset,
             len,
             pattern,
-            args: args.map(|v| v.into_iter().map(ToOwned::to_owned).collect()),
+            args,
         }
     }
 
     #[allow(dead_code)]
-    pub fn encode(&self) -> Vec<Value> {
+    pub fn encode(self) -> Vec<Value> {
         let mut values = vec![
-            Value::String(self.name.clone()),
-            Value::String(match self.type_ {
-                ArgsType::String => "string".to_owned(),
-                ArgsType::Number => "number".to_owned(),
-            }),
+            Value::String(self.name),
+            Value::String(self.type_),
             Value::Number(self.offset.into()),
             Value::Number(self.len.into()),
             Value::String(match self.pattern {
                 Pattern::Options => "options".to_owned(),
                 Pattern::Range => "range".to_owned(),
-                Pattern::Raw => "raw".to_owned(),
+                Pattern::RawNumber => "rawNumber".to_owned(),
+                Pattern::RawString => "rawString".to_owned(),
                 Pattern::Utf8 => "utf8".to_owned(),
             }),
         ];
         if let Some(args) = &self.args {
-            values.push(Value::Array(match self.type_ {
-                ArgsType::String => args.iter().map(|v| Value::String(v.clone())).collect(),
-                ArgsType::Number => args
-                    .iter()
-                    .map(|v| Value::Number(v.parse().unwrap()))
-                    .collect(),
-            }));
+            values.push(Value::Array(args.to_owned()));
         }
         values
     }
 }
 
-pub fn decode_trait_schema(traits_pool: Vec<Vec<Value>>) -> Result<Vec<TraitSchema>, Error> {
+pub fn decode_trait_schema(traits_pool: Value) -> Result<Vec<TraitSchema>, Error> {
     let traits_base = traits_pool
+        .as_array()
+        .ok_or(Error::ParseInvalidTraitsBase)?
         .into_iter()
         .map(|schema| {
+            let schema = schema.as_array().ok_or(Error::ParseInvalidTraitsBase)?;
             if schema.len() < 5 {
                 return Err(Error::SchemaInsufficientElements);
             }
             let name = schema[0].as_str().ok_or(Error::SchemaInvalidName)?;
-            let type_ = match schema[1].as_str().ok_or(Error::SchemaInvalidType)? {
-                "string" => ArgsType::String,
-                "number" => ArgsType::Number,
-                _ => return Err(Error::SchemaTypeMismatch),
-            };
+            let type_ = schema[1].as_str().ok_or(Error::SchemaInvalidType)?;
             let offset = schema[2].as_u64().ok_or(Error::SchemaInvalidOffset)?;
             let len = schema[3].as_u64().ok_or(Error::SchemaInvalidLen)?;
             let pattern_str = schema[4].as_str().ok_or(Error::SchemaInvalidPattern)?;
-            let pattern = match (pattern_str, &type_) {
-                ("options", _) => Pattern::Options,
-                ("raw", _) => Pattern::Raw,
-                ("utf8", ArgsType::String) => Pattern::Utf8,
-                ("range", ArgsType::Number) => Pattern::Range,
+            let pattern = match pattern_str {
+                "options" => Pattern::Options,
+                "rawNumber" => Pattern::RawNumber,
+                "rawString" => Pattern::RawString,
+                "utf8" => Pattern::Utf8,
+                "range" => Pattern::Range,
                 _ => return Err(Error::SchemaPatternMismatch),
             };
             let args = if let Some(args) = schema.get(5) {
-                let args = args
-                    .as_array()
-                    .ok_or(Error::SchemaInvalidArgs)?
-                    .iter()
-                    .map(|value| {
-                        if value.is_string() {
-                            value
-                                .as_str()
-                                .ok_or(Error::SchemaInvalidArgsElement)
-                                .map(ToOwned::to_owned)
-                        } else {
-                            Ok(format!(
-                                "{}",
-                                value.as_u64().ok_or(Error::SchemaInvalidArgsElement)?
-                            ))
-                        }
-                    })
-                    .collect::<Result<Vec<_>, _>>()?;
+                let args = args.as_array().ok_or(Error::SchemaInvalidArgs)?.to_owned();
                 Some(args)
             } else {
                 None
             };
             Ok(TraitSchema {
                 name: name.to_owned(),
-                type_,
+                type_: type_.to_owned(),
                 offset,
                 len,
                 pattern,
