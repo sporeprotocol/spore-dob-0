@@ -2,7 +2,7 @@
 
 [[cells]]
 name = "spore-dob-0"
-enable_type_id = true
+enable_type_id = false
 location = { file = "target/riscv64imac-unknown-none-elf/release/spore-dob-0" }
 
 # The lock script set to output cells
