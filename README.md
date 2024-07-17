@@ -26,13 +26,20 @@ DOB0 protocol requires DOB artist to pre-define a collection DNA traits pool, as
         description: "Unicorn Collection",
         dobs: {
             decoder: {
-                type: "code_hash"// or "type_id",
-                hash: "0x4f441345deb88edb39228e46163a8f11ac7736376af8fe5e791e194038a3ec7b",
+                type: "code_hash"// or "type_id" or "type_script",
+                // (in case of `code_hash` or "type_id")
+                hash: "0x13cac78ad8482202f18f9df4ea707611c35f994375fa03ae79121312dda9925c",
+                // (in case of `type_script`)
+                // script: {
+                //     code_hash: "0x00000000000000000000000000000000000000000000000000545950455f4944",
+                //     hash_type: "type",
+                //     args: "0xf0b942b593a33f91fcbb9ea27c5a76b54afc048520e157cd0d2ba39403ece024"
+                // }
             },
             pattern: [
                 [
                     "Face",
-                    "string",
+                    "String",
                     0,
                     1,
                     "options",
@@ -40,7 +47,7 @@ DOB0 protocol requires DOB artist to pre-define a collection DNA traits pool, as
                 ],
                 [
                     "Age",
-                    "number",
+                    "Number",
                     1,
                     1,
                     "range",
@@ -48,12 +55,26 @@ DOB0 protocol requires DOB artist to pre-define a collection DNA traits pool, as
                 ],
                 [
                     "BirthMonth",
-                    "number",
+                    "Number",
                     2,
                     1,
                     "options",
                     [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]
                 ],
+                [
+                    "Score",
+                    "Number",
+                    3,
+                    1,
+                    "rawNumber"
+                ],
+                [
+                    "Identity",
+                    "String",
+                    4,
+                    8,
+                    "rawString"
+                ]
                 ...
             ]
         }
@@ -67,7 +88,7 @@ For real-world use case, this DOB0 decoder program is referenced by [decoder-tem
 1. record the hash of binary on-chain, which refers to `code_hash`
 2. deploy the binary into an on-chain CKB cell with `type_id` enabled, using its `type_script.args`
 
-`type: "code_hash"` means the below `hash` is a CKB personalizied blake2b hash of DOB0 decoder RISC-V binary. To be contrast, `type: "type_id"` means the below `hash` is a `type_id` args value that points to an on-chain cell which keeps the DOB0 decoder RISC-V binary in ins `data` field.
+`type: "code_hash"` means the below `hash` is a CKB personalizied blake2b hash of DOB0 decoder RISC-V binary. To be contrast, `type: "type_id"` means the below `hash` is a `type_id` args value that points to an on-chain cell which keeps the DOB0 decoder RISC-V binary in ins `data` field. In addition, we recently added a new type `type: "type_script"`, which directly indicates the decoder through its type script.
 
 ## Diagram
 ![plot](./assets/DOB0.jpg)
@@ -82,12 +103,12 @@ $ cargo install --path . --example ckb-vm-runner
 For quick run:
 
 ```sh
-$ cargo run-riscv -- ac7b88 "[[\"Name\",\"string\",0,1,\"options\",[\"Alice\",\"Bob\",\"Charlie\",\"David\",\"Ethan\",\"Florence\",\"Grace\",\"Helen\"]],[\"Age\",\"number\",1,1,\"range\",[0,100]],[\"Score\",\"number\",2,1,\"raw\"]]"
+$ cargo run-riscv -- ac7b88 "[[\"Name\",\"String\",0,1,\"options\",[\"Alice\",\"Bob\",\"Charlie\",\"David\",\"Ethan\",\"Florence\",\"Grace\",\"Helen\"]],[\"Age\",\"Number\",1,1,\"range\",[0,100]],[\"Score\",\"Number\",2,1,\"rawNumber\"]]"
 
 or
 
 $ cargo build-riscv --release
-$ ckb-vm-runner target/riscv64imac-unknown-none-elf/release/spore-dobs-decoder ac7b88 "[[\"Name\",\"string\",0,1,\"options\",[\"Alice\",\"Bob\",\"Charlie\",\"David\",\"Ethan\",\"Florence\",\"Grace\",\"Helen\"]],[\"Age\",\"number\",1,1,\"range\",[0,100]],[\"Score\",\"number\",2,1,\"raw\"]]"
+$ ckb-vm-runner target/riscv64imac-unknown-none-elf/release/spore-dobs-decoder ac7b88 "[[\"Name\",\"String\",0,1,\"options\",[\"Alice\",\"Bob\",\"Charlie\",\"David\",\"Ethan\",\"Florence\",\"Grace\",\"Helen\"]],[\"Age\",\"Number\",1,1,\"range\",[0,100]],[\"Score\",\"Number\",2,1,\"rawNumber\"]]"
 
 
 "[{\"name\":\"Name\",\"traits\":[{\"String\":\"Ethan\"}]},{\"name\":\"Age\",\"traits\":[{\"Number\":23}]},{\"name\":\"Score\",\"traits\":[{\"Number\":136}]}]"
@@ -97,3 +118,17 @@ How to integrate:
 1. install `ckb-vm-runner` into your back server natively
 2. call `ckb-vm-runner` with the path of `spore-dob-0` binary, DNA and Pattern parameters in your server code (refer to above quick run)
 3. parse the JSON traits result
+
+## Related Repo
+1. dob-standalone-decoder-server: https://github.com/sporeprotocol/dob-decoder-standalone-server
+2. spore-dob-1: https://github.com/sporeprotocol/spore-dob-svg
+
+## Latest On-chain Information
+
+`code_hash`: 0x13cac78ad8482202f18f9df4ea707611c35f994375fa03ae79121312dda9925c
+
+`tx_hash`:
+* testnet: 0x4a8a0d079f8438bed89e0ece1b14e67ab68e2aa7688a5f4917a59a185e0f8fd5
+* mainnet: 0x71023885a2178648be6a7f138ee49379000a82cda98dd8adabee99eaaca42fde
+
+`type_id`: None
