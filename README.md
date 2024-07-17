@@ -84,11 +84,10 @@ DOB0 protocol requires DOB artist to pre-define a collection DNA traits pool, as
 
 `0xefc2866a311da5b6dfcdfc4e3c22d00d024a53217ebc33855eeab1068990ed9d` is the DNA bytes, which DOB0 decoder will parse one by one. `pattern: ...` is the pattern created by Cluster artist, which will be also parsed in DOB0 decoder in the meantime. In addition, the pattern is a JSON array, reference is here: https://docs.spore.pro/dob0/protocol#pattern-definition.
 
-For real-world use case, this DOB0 decoder program is referenced by [decoder-template-rust](https://github.com/sporeprotocol/decoder-template-rust) and compiled into RISC-V binary. Then, we have two different methods to put it on-chain:
-1. record the hash of binary on-chain, which refers to `code_hash`
-2. deploy the binary into an on-chain CKB cell with `type_id` enabled, using its `type_script.args`
-
-`type: "code_hash"` means the below `hash` is a CKB personalizied blake2b hash of DOB0 decoder RISC-V binary. To be contrast, `type: "type_id"` means the below `hash` is a `type_id` args value that points to an on-chain cell which keeps the DOB0 decoder RISC-V binary in ins `data` field. In addition, we recently added a new type `type: "type_script"`, which directly indicates the decoder through its type script.
+decoder location methods:
+* `type: "code_hash"` means the below `hash` is a CKB personalizied blake2b hash of DOB0 decoder RISC-V binary.
+* `type: "type_id"` means the below `hash` is a `type_id` args value that points to an on-chain cell which keeps the DOB0 decoder RISC-V binary in its `data` field.
+* `type: "type_script"` uses the below `script` as the indicator which points to the on-chain decoder through its type script.
 
 ## Diagram
 ![plot](./assets/DOB0.jpg)
